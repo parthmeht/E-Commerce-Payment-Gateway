@@ -43,6 +43,7 @@
         android:layout_marginTop="24dp"
         android:textColor="@android:color/background_dark"
         android:textSize="18sp"
+        android:maxWidth="300dp"
         app:layout_constraintStart_toStartOf="@+id/profile_emailTextView"
         app:layout_constraintTop_toBottomOf="@+id/profile_emailTextView" />
 

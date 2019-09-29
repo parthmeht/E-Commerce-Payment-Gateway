@@ -121,6 +121,12 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 toolbar.setTitle(R.string.menu_profile);
                 navigationView.setCheckedItem(R.id.nav_profile);
                 break;
+            case R.id.nav_item:
+                fragmentTransaction = fragmentManager.beginTransaction();
+
+                break;
+
+
 
         }
         drawer.closeDrawer(GravityCompat.START);
