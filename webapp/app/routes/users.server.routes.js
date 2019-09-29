@@ -27,7 +27,7 @@ router.post('/signin', function (req, res, next) {
 			}
 			var message = 'Logged in Successfully';
 			// generate a signed son web token with the contents of user object and return it in the response
-			const token = jwt.sign(user.toJSON(), config.sessionSecret, {
+			const token = jwt.sign({id: user.id}, config.sessionSecret, {
 				expiresIn: 604800 // 1 week
 			});
 			return res.json({ token, message });
