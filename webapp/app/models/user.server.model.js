@@ -5,7 +5,8 @@
 var mongoose = require('mongoose'),
 	crypto = require('crypto'),
 	Schema = mongoose.Schema,
-	autoIncrement = require('mongoose-auto-increment');
+	autoIncrement = require('mongoose-auto-increment'),
+	gateway = require('../../config/gateway');
 
 // Define a new 'UserSchema'
 var UserSchema = new Schema({
@@ -41,7 +42,7 @@ var UserSchema = new Schema({
 		// Validate the 'password' value length
 		validate: [
 
-			function(password) {
+			function (password) {
 				return password && password.length > 6;
 			}, 'Password should be longer'
 		]
@@ -61,33 +62,48 @@ var UserSchema = new Schema({
 		type: String,
 		required: 'Gender is required'
 	},
+	customerId: Number,
 	created: {
 		type: Date,
 		// Create a default 'created' value
 		default: Date.now
 	},
 	resetPasswordToken: String,
-	resetPasswordExpires: Date
+	resetPasswordExpires: Date,
 });
 
 // Set the 'fullname' virtual property
-UserSchema.virtual('fullName').get(function() {
+UserSchema.virtual('fullName').get(function () {
 	return this.firstName + ' ' + this.lastName;
-}).set(function(fullName) {
+}).set(function (fullName) {
 	var splitName = fullName.split(' ');
 	this.firstName = splitName[0] || '';
 	this.lastName = splitName[1] || '';
 });
 
 // Use a pre-save middleware to hash the password
-UserSchema.pre('save', function(next) {
+UserSchema.pre('save', async function (next) {
 	if (this.password) {
 		//this.salt = new Buffer(crypto.randomBytes(16).toString('base64'), 'base64');
 		this.salt = genRandomString(16);
 		this.password = this.hashPassword(this.password);
 	}
 
-	next();
+	let response = await gateway.customer.create({
+		firstName: this.firstName,
+		lastName: this.lastName,
+		email: this.email
+	});
+
+	console.log(response);
+	if(response.success){
+		this.customerId = 	response.customer.id;
+		next();
+	}else {
+		var message = 'Failed to create the user!';
+		return res.json({message:message});
+	}
+
 });
 
 /**
@@ -95,28 +111,28 @@ UserSchema.pre('save', function(next) {
  * @function
  * @param {number} length - Length of the random string.
  */
-var genRandomString = function(length){
-    return crypto.randomBytes(Math.ceil(length/2))
-            .toString('hex') /** convert to hexadecimal format */
-            .slice(0,length);   /** return required number of characters */
+var genRandomString = function (length) {
+	return crypto.randomBytes(Math.ceil(length / 2))
+		.toString('hex') /** convert to hexadecimal format */
+		.slice(0, length);   /** return required number of characters */
 };
 
 // Create an instance method for hashing a password
-UserSchema.methods.hashPassword = function(password) {
+UserSchema.methods.hashPassword = function (password) {
 	//return crypto.pbkdf2Sync(password, this.salt, 10000, 64).toString('base64');
 	var hash = crypto.createHmac('sha512', this.salt); /** Hashing algorithm sha512 */
-    hash.update(password);
-    var value = hash.digest('hex');
-    return value;
+	hash.update(password);
+	var value = hash.digest('hex');
+	return value;
 };
 
 // Create an instance method for authenticating user
-UserSchema.methods.authenticate = function(password) {
+UserSchema.methods.authenticate = function (password) {
 	return this.password === this.hashPassword(password);
 };
 
 // Find possible not used username
-UserSchema.statics.findUniqueUsername = function(username, suffix, callback) {
+UserSchema.statics.findUniqueUsername = function (username, suffix, callback) {
 	var _this = this;
 
 	// Add a 'username' suffix
@@ -125,7 +141,7 @@ UserSchema.statics.findUniqueUsername = function(username, suffix, callback) {
 	// Use the 'User' model 'findOne' method to find an available unique username
 	_this.findOne({
 		username: possibleUsername
-	}, function(err, user) {
+	}, function (err, user) {
 		// If an error occurs call the callback with a null value, otherwise find find an available unique username
 		if (!err) {
 			// If an available unique username was found call the callback method, otherwise call the 'findUniqueUsername' method again with a new suffix
