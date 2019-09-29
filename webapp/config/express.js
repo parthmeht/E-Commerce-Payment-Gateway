@@ -36,10 +36,11 @@ module.exports = function() {
 
 	const userAuth = require('../app/routes/users.server.routes.js');
 	const profileRoute = require('../app/routes/profile.server.routes.js');
+	const itemsRoute = require('../app/routes/item.server.routes');
 	// Load the routing files
 	app.use('/auth', userAuth);
 	app.use('/user', passport.authenticate('jwt', {session: false}), profileRoute);
-
+	app.use('/item', itemsRoute);
 	// Return the Express application instance
 	return app;
 };
