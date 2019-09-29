@@ -9,6 +9,7 @@ import java.io.Serializable;
 
 public class User implements Serializable {
     private String id;
+    private long customerId;
     private String userId;
     private String userProfileImageUrl;
     private String firstName;
@@ -138,5 +139,13 @@ public class User implements Serializable {
                 ", city='" + city + '\'' +
                 ", gender='" + gender + '\'' +
                 '}';
+    }
+
+    public long getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(long customerId) {
+        this.customerId = customerId;
     }
 }
