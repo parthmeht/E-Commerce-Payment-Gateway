@@ -35,9 +35,13 @@ exports.edit = function(req, res, next) {
 };
 
 exports.getClientToken = function(req, res, next) {
-    gateway.clientToken.generate({}, function (err, response) {
-        res.send({clientToken: response.clientToken, messages: "Success"});
-    });
+    if (req.user) {
+        gateway.clientToken.generate({customerId: req.user.customerId}, function (err, response) {
+            res.send({clientToken: response.clientToken, messages: "Success"});
+        });
+    }else{
+        res.send({message: "Invalid Request"});
+    }
 };
 
 exports.checkout = function(req, res, next){
