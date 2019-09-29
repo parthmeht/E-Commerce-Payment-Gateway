@@ -37,6 +37,7 @@ public class User implements Serializable {
     public User(JSONObject json){
         try {
             this.id = json.getString(Parameters.ID);
+            this.customerId = json.getLong(Parameters.CUSTOMER_ID);
             this.userId = json.getString(Parameters.USER_ID);
             this.firstName = json.getString(Parameters.FIRST_NAME);
             this.lastName = json.getString(Parameters.LAST_NAME);
