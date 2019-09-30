@@ -21,6 +21,15 @@ public final class Parameters {
     public static final String API_URL = "https://profile-application.herokuapp.com";
     public static final String API_URL_LOCAL = "http://10.0.2.2:3000";
 
+    public static final String ITEMS_ITEM_NAME = "name";
+    public static final String ITEMS_ITEM_REGION = "region";
+    public static final String ITEMS_ITEM_ID = "_id";
+    public static final String ITEMS_ITEM_DISCOUNT = "discount";
+    public static final String ITEMS_ITEM_PRICE = "price";
+    public static final String ITEMS_ITEM_PHOTO = "photo";
+
+
+
 
     public static final String TOKEN = "token";
     public static final String HOME_FRAGMENT = "home_fragment";

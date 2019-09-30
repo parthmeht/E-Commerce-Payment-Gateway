@@ -23,6 +23,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.app.profileapplication.models.User;
+import com.app.profileapplication.ui.items.ItemsFragment;
 import com.app.profileapplication.ui.profile.ProfileFragment;
 import com.app.profileapplication.utilities.Parameters;
 import com.google.android.material.navigation.NavigationView;
@@ -122,7 +123,10 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 navigationView.setCheckedItem(R.id.nav_profile);
                 break;
             case R.id.nav_item:
+                ItemsFragment itemsFragment = new ItemsFragment();
                 fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.nav_host_fragment, itemsFragment).addToBackStack(null).commit();
+                navigationView.setCheckedItem(R.id.nav_item);
 
                 break;
 
