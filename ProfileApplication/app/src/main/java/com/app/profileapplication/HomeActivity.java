@@ -23,6 +23,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.app.profileapplication.models.User;
+import com.app.profileapplication.ui.cart.CartFragment;
 import com.app.profileapplication.ui.profile.ProfileFragment;
 import com.app.profileapplication.utilities.Parameters;
 import com.google.android.material.navigation.NavigationView;
@@ -123,11 +124,12 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 break;
             case R.id.nav_item:
                 fragmentTransaction = fragmentManager.beginTransaction();
-
                 break;
-
-
-
+            case R.id.nav_cart:
+                CartFragment cartFragment = new CartFragment();
+                fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.nav_host_fragment, cartFragment).addToBackStack(null).commit();
+                break;
         }
         drawer.closeDrawer(GravityCompat.START);
         return true;

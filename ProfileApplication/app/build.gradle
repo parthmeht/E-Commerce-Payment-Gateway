@@ -41,4 +41,8 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.2.0") ////Okhttp
     implementation 'com.google.code.gson:gson:2.8.5' ////gson
     implementation 'com.googlecode.json-simple:json-simple:1.1'
+    implementation 'com.braintreepayments.api:drop-in:4.2.0'
+    /*implementation 'com.braintreepayments.api:drop-in:4.4.1'*/
+    /*implementation 'com.braintreepayments.api:braintree:3.6.0'*/
+
 }

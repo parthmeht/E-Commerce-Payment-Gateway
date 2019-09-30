@@ -16,7 +16,7 @@
     </group>
     <group>
         <item
-            android:id="nav_cart"
+            android:id="@+id/nav_cart"
             android:title="Cart"/>
     </group>
 
