@@ -3,16 +3,22 @@ package com.app.profileapplication.ui.items;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.app.profileapplication.R;
 import com.app.profileapplication.adapters.ItemsAdapter;
 import com.app.profileapplication.models.Items;
+import com.app.profileapplication.ui.cart.CartFragment;
+import com.app.profileapplication.ui.edit.EditFragment;
 import com.app.profileapplication.utilities.Parameters;
 
 import org.jetbrains.annotations.NotNull;
@@ -33,9 +39,11 @@ import okhttp3.Response;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ItemsFragment extends Fragment {
+public class ItemsFragment extends Fragment implements ItemsAdapter.ItemsCartInterface {
 
     RecyclerView recyclerView;
+    ArrayList<Items> itemsAdded = new ArrayList<>();
+    Button checkoutButton;
 
     ItemsAdapter itemsAdapter;
     public ItemsFragment() {
@@ -46,12 +54,25 @@ public class ItemsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        ArrayList<Items> itemsArrayList = new ArrayList();
+
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_items, container, false);
 
         String responseString = getData(Parameters.API_URL+"/item/getitems", view);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
+        checkoutButton = view.findViewById(R.id.fragment_items_checkout);
+        checkoutButton.setOnClickListener(view1 -> {
+            Bundle bundle = new Bundle();
+            bundle.putSerializable(Parameters.ITEM_LIST, itemsAdded);
+
+            CartFragment fragment = new CartFragment();
+            fragment.setArguments(bundle);
+            FragmentManager fragmentManager = getFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.nav_host_fragment, fragment).addToBackStack(null);
+            fragmentTransaction.commit();
+        });
+
         return view;
     }
 
@@ -98,7 +119,7 @@ public class ItemsFragment extends Fragment {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            itemsAdapter = new ItemsAdapter(getContext(), itemsArrayList);
+                            itemsAdapter = new ItemsAdapter(getContext(), itemsArrayList, ItemsFragment.this::addToCart);
                             recyclerView.setAdapter(itemsAdapter);
                         }
                     });
@@ -113,5 +134,12 @@ public class ItemsFragment extends Fragment {
 
     }
 
+    @Override
+    public void addToCart(Items items) {
+        itemsAdded.add(items);
+        for (Items i: itemsAdded)
+            Log.d("Item", i.getItemName());
+
+    }
 }
 

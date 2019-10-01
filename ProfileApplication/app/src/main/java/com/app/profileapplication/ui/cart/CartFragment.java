@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -16,6 +17,8 @@ import android.widget.Button;
 
 import com.app.profileapplication.MainActivity;
 import com.app.profileapplication.R;
+import com.app.profileapplication.adapters.CartAdapter;
+import com.app.profileapplication.models.Items;
 import com.app.profileapplication.utilities.Parameters;
 import com.braintreepayments.api.BraintreeFragment;
 import com.braintreepayments.api.dropin.DropInActivity;
@@ -26,6 +29,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -48,7 +52,10 @@ public class CartFragment extends Fragment {
     private OkHttpClient client = new OkHttpClient();
     private SharedPreferences preferences;
     private String client_token, token;
+    private ArrayList<Items> itemsArrayList;
+    private RecyclerView recyclerView;
 
+    private CartAdapter cartAdapter;
     public CartFragment() {
         // Required empty public constructor
     }
@@ -59,6 +66,12 @@ public class CartFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_cart, container, false);
+        itemsArrayList = (ArrayList<Items>) getArguments().getSerializable(Parameters.ITEM_LIST);
+        Log.d("ITEMSARRAYLIST123", String.valueOf(itemsArrayList.size()));
+        recyclerView = view.findViewById(R.id.fragment_cart_recyclerView);
+        cartAdapter = new CartAdapter(getContext(), itemsArrayList);
+        recyclerView.setAdapter(cartAdapter);
+
         makePayment = view.findViewById(R.id.cart_makePaymentButton);
         preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
         token = preferences.getString(Parameters.TOKEN, "");
@@ -70,6 +83,7 @@ public class CartFragment extends Fragment {
                     .clientToken(client_token);
             startActivityForResult(dropInRequest.getIntent(getContext()), DROP_IN_REQUEST);
         });
+
         return view;
     }
 

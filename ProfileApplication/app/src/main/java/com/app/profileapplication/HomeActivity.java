@@ -24,6 +24,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.app.profileapplication.models.User;
 import com.app.profileapplication.ui.cart.CartFragment;
+import com.app.profileapplication.ui.items.ItemsFragment;
 import com.app.profileapplication.ui.profile.ProfileFragment;
 import com.app.profileapplication.utilities.Parameters;
 import com.google.android.material.navigation.NavigationView;
@@ -123,18 +124,16 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 navigationView.setCheckedItem(R.id.nav_profile);
                 break;
             case R.id.nav_item:
+                ItemsFragment itemsFragment = new ItemsFragment();
                 fragmentTransaction = fragmentManager.beginTransaction();
-
+                fragmentTransaction.replace(R.id.nav_host_fragment, itemsFragment).addToBackStack(null).commit();
+                navigationView.setCheckedItem(R.id.nav_item);
                 break;
             case R.id.nav_cart:
                 CartFragment cartFragment = new CartFragment();
                 fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.replace(R.id.nav_host_fragment, cartFragment).addToBackStack(null).commit();
                 break;
-
-
-
-
         }
         drawer.closeDrawer(GravityCompat.START);
         return true;

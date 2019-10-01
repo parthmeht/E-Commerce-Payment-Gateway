@@ -21,10 +21,12 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder> 
 
     Context context;
     ArrayList<Items> items;
+    ItemsCartInterface itemsCartInterface;
 
-    public ItemsAdapter(Context context, ArrayList<Items> items){
+    public ItemsAdapter(Context context, ArrayList<Items> items, ItemsCartInterface itemsCartInterface){
         this.context = context;
         this.items= items;
+        this.itemsCartInterface = itemsCartInterface;
     }
     @NonNull
     @Override
@@ -42,7 +44,9 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder> 
         holder.price.setText(String.valueOf(items.get(position).getPrice()));
         String r =items.get(position).getImage();
         int id= context.getResources().getIdentifier(r, "drawable", context.getPackageName());
-//        holder.itemImage.setImageResource(id);
+        holder.addToCart.setOnClickListener(view -> {
+            itemsCartInterface.addToCart(items.get(position));
+        });
 
 
     }
@@ -64,5 +68,9 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder> 
             addToCart = itemView.findViewById(R.id.fragment_items_item_add_to_cart);
             itemImage = itemView.findViewById(R.id.fragment_items_item_image);
         }
+    }
+
+    public interface ItemsCartInterface{
+        void addToCart(Items items);
     }
 }
