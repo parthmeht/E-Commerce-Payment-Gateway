@@ -44,4 +44,5 @@ public final class Parameters {
     public static final String LAST_NAME = "lastName";
     public static final String GENDER = "gender";
     public static final String CUSTOMER_ID = "customerId";
+    public static final String CLIENT_TOKEN = "clientToken";
 }
