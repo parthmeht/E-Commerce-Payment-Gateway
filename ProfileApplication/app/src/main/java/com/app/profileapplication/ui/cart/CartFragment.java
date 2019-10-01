@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.preference.PreferenceManager;
@@ -69,6 +70,7 @@ public class CartFragment extends Fragment {
         itemsArrayList = (ArrayList<Items>) getArguments().getSerializable(Parameters.ITEM_LIST);
         Log.d("ITEMSARRAYLIST123", String.valueOf(itemsArrayList.size()));
         recyclerView = view.findViewById(R.id.fragment_cart_recyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         cartAdapter = new CartAdapter(getContext(), itemsArrayList);
         recyclerView.setAdapter(cartAdapter);
 
