@@ -1,6 +1,8 @@
 package com.app.profileapplication.models;
 
-public class Items {
+import java.io.Serializable;
+
+public class Items implements Serializable {
 
     String itemName, region, id, image;
     Double discount, price;
