@@ -44,6 +44,7 @@ public class ItemsFragment extends Fragment implements ItemsAdapter.ItemsCartInt
     RecyclerView recyclerView;
     ArrayList<Items> itemsAdded = new ArrayList<>();
     Button checkoutButton;
+    private Double total = 0.0;
 
     ItemsAdapter itemsAdapter;
     public ItemsFragment() {
@@ -64,6 +65,7 @@ public class ItemsFragment extends Fragment implements ItemsAdapter.ItemsCartInt
         checkoutButton.setOnClickListener(view1 -> {
             Bundle bundle = new Bundle();
             bundle.putSerializable(Parameters.ITEM_LIST, itemsAdded);
+            bundle.putDouble(Parameters.PRICE, total);
 
             CartFragment fragment = new CartFragment();
             fragment.setArguments(bundle);
@@ -137,6 +139,7 @@ public class ItemsFragment extends Fragment implements ItemsAdapter.ItemsCartInt
     @Override
     public void addToCart(Items items) {
         itemsAdded.add(items);
+        total+=items.getPrice();
         for (Items i: itemsAdded)
             Log.d("Item", i.getItemName());
 

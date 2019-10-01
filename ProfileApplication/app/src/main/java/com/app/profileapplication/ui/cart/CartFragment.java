@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.app.profileapplication.MainActivity;
 import com.app.profileapplication.R;
@@ -55,6 +56,8 @@ public class CartFragment extends Fragment {
     private String client_token, token;
     private ArrayList<Items> itemsArrayList;
     private RecyclerView recyclerView;
+    private Double total;
+    private TextView price;
 
     private CartAdapter cartAdapter;
     public CartFragment() {
@@ -68,11 +71,15 @@ public class CartFragment extends Fragment {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_cart, container, false);
         itemsArrayList = (ArrayList<Items>) getArguments().getSerializable(Parameters.ITEM_LIST);
+        total = getArguments().getDouble(Parameters.PRICE);
         Log.d("ITEMSARRAYLIST123", String.valueOf(itemsArrayList.size()));
         recyclerView = view.findViewById(R.id.fragment_cart_recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()))  ;
         cartAdapter = new CartAdapter(getContext(), itemsArrayList);
         recyclerView.setAdapter(cartAdapter);
+        price = view.findViewById(R.id.fragment_cart_total_price);
+        price.setText(total.toString());
+
 
         makePayment = view.findViewById(R.id.cart_makePaymentButton);
         preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
@@ -154,4 +161,6 @@ public class CartFragment extends Fragment {
             }
         }
     }
+
+
 }

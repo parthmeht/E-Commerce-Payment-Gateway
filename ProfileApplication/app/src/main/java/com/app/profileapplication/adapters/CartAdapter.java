@@ -21,10 +21,12 @@ import java.util.ArrayList;
 public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder>{
 
     Context context;
+
     ArrayList<Items> items;
     public CartAdapter(Context context, ArrayList<Items> items){
         this.context = context;
         this.items= items;
+//        this.cartAdapterInterface = cartAdapterInterface;
     }
 
     @NonNull
@@ -40,6 +42,10 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder>{
 
         holder.itemName.setText(items.get(position).getItemName());
         Log.d("ITEMSNAME", items.get(position).getItemName());
+        holder.remove.setOnClickListener(view -> {
+
+
+        });
     }
 
     @Override
@@ -60,4 +66,5 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder>{
             itemImage = itemView.findViewById(R.id.fragment_cart_item_image);
         }
     }
+
 }
