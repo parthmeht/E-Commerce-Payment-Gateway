@@ -41,6 +41,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder>{
     public void onBindViewHolder(@NonNull CartAdapter.ViewHolder holder, int position) {
 
         holder.itemName.setText(items.get(position).getItemName());
+        holder.price.setText("$ " + String.valueOf(items.get(position).getPrice()));
         Log.d("ITEMSNAME", items.get(position).getItemName());
         holder.remove.setOnClickListener(view -> {
 

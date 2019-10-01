@@ -129,11 +129,11 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 fragmentTransaction.replace(R.id.nav_host_fragment, itemsFragment).addToBackStack(null).commit();
                 navigationView.setCheckedItem(R.id.nav_item);
                 break;
-            case R.id.nav_cart:
-                CartFragment cartFragment = new CartFragment();
-                fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.nav_host_fragment, cartFragment).addToBackStack(null).commit();
-                break;
+//            case R.id.nav_cart:
+//                CartFragment cartFragment = new CartFragment();
+//                fragmentTransaction = fragmentManager.beginTransaction();
+//                fragmentTransaction.replace(R.id.nav_host_fragment, cartFragment).addToBackStack(null).commit();
+//                break;
         }
         drawer.closeDrawer(GravityCompat.START);
         return true;

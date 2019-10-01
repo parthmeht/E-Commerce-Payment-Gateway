@@ -48,5 +48,8 @@ public final class Parameters {
 
     public static final String PRICE = "price";
 
+    public static final String PAYMENT_METHOD_NONCE = "payment_method_nonce";
+
+
     public static final String ITEM_LIST = "itemList";
 }

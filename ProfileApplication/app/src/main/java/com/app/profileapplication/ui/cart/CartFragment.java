@@ -16,9 +16,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.app.profileapplication.HomeActivity;
 import com.app.profileapplication.MainActivity;
 import com.app.profileapplication.R;
+import com.app.profileapplication.SignUpActivity;
 import com.app.profileapplication.adapters.CartAdapter;
 import com.app.profileapplication.models.Items;
 import com.app.profileapplication.utilities.Parameters;
@@ -35,8 +38,11 @@ import java.util.ArrayList;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.Headers;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
@@ -58,6 +64,8 @@ public class CartFragment extends Fragment {
     private RecyclerView recyclerView;
     private Double total;
     private TextView price;
+    public static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
+    String message;
 
     private CartAdapter cartAdapter;
     public CartFragment() {
@@ -78,7 +86,7 @@ public class CartFragment extends Fragment {
         cartAdapter = new CartAdapter(getContext(), itemsArrayList);
         recyclerView.setAdapter(cartAdapter);
         price = view.findViewById(R.id.fragment_cart_total_price);
-        price.setText(total.toString());
+        price.setText("Total : $ " + total.toString());
 
 
         makePayment = view.findViewById(R.id.cart_makePaymentButton);
@@ -152,6 +160,16 @@ public class CartFragment extends Fragment {
                 DropInResult result = data.getParcelableExtra(DropInResult.EXTRA_DROP_IN_RESULT);
                 String paymentMethodNonce = result.getPaymentMethodNonce().getNonce();
                 Log.d(TAG, paymentMethodNonce);
+
+                JSONObject jsonObject = new JSONObject();
+                try {
+                    jsonObject.put(Parameters.PAYMENT_METHOD_NONCE, paymentMethodNonce);
+                    jsonObject.put(Parameters.PRICE, total);
+                    post(Parameters.API_URL+"/user/checkout", jsonObject.toString());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
                 // use the result to update your UI and send the payment method nonce to your server
             } else if (resultCode == getActivity().RESULT_CANCELED) {
                 // the user canceled
@@ -160,6 +178,45 @@ public class CartFragment extends Fragment {
                 Exception error = (Exception) data.getSerializableExtra(DropInActivity.EXTRA_ERROR);
             }
         }
+    }
+
+
+    public void post(String url, String json) {
+        RequestBody body = RequestBody.create(json, JSON);
+        Request request = new Request.Builder()
+                .url(url)
+                .post(body)
+                .header("Authorization",Parameters.BEARER + " " + token)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override public void onResponse(Call call, Response response) throws IOException {
+                try (ResponseBody responseBody = response.body()) {
+                    if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+
+                    Headers responseHeaders = response.headers();
+                    for (int i = 0, size = responseHeaders.size(); i < size; i++) {
+                        Log.v(TAG,responseHeaders.name(i) + ": " + responseHeaders.value(i));
+                    }
+
+                    String responseString = responseBody.string();
+                    Log.v(TAG,responseString);
+                    try {
+                        JSONObject json = new JSONObject(responseString);
+
+                        message = (String) json.get(Parameters.MESSAGE);
+                        Log.d("PAYMENT-RESPONSE", message);
+                    } catch (JSONException e){
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+        });
     }
 
 
