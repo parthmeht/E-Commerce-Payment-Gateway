@@ -76,7 +76,7 @@ public class ItemsFragment extends Fragment implements ItemsAdapter.ItemsCartInt
         checkoutButton.setOnClickListener(view1 -> {
             Bundle bundle = new Bundle();
             bundle.putSerializable(Parameters.ITEM_LIST, itemsAdded);
-            bundle.putDouble(Parameters.PRICE, total);
+            //bundle.putDouble(Parameters.PRICE, total);
             bundle.putString(Parameters.TOKEN, token);
 
             CartFragment fragment = new CartFragment();
@@ -198,6 +198,9 @@ public class ItemsFragment extends Fragment implements ItemsAdapter.ItemsCartInt
                         //String token = (String) json.get(Parameters.TOKEN);
                         message = (String) json.get(Parameters.MESSAGE);
                         Log.d("RESPONSE", message);
+                        if (message.equalsIgnoreCase("Cart updated successfully!!")){
+                            getActivity().runOnUiThread(() -> Toast.makeText(getContext(),message,Toast.LENGTH_LONG).show());
+                        }
                     } catch (JSONException e){
                         e.printStackTrace();
                     }

@@ -86,7 +86,7 @@ public class CartFragment extends Fragment implements CartAdapter.RemoveItem {
         view = inflater.inflate(R.layout.fragment_cart, container, false);
 
         userToken = getArguments().getString(Parameters.TOKEN);
-        total = getArguments().getDouble(Parameters.PRICE);
+        //total = getArguments().getDouble(Parameters.PRICE);
 //        Log.d("ITEMSARRAYLIST123", String.valueOf(itemsArrayList.size()));
 
         getData(Parameters.API_URL + "/user/profile");
@@ -304,7 +304,7 @@ public class CartFragment extends Fragment implements CartAdapter.RemoveItem {
         cartAdapter.notifyDataSetChanged();
         try {
             jsonObject.put("id", item.get_id());
-            jsonObject.put(Parameters.DISCOUNT_PRICE, 1);
+            jsonObject.put(Parameters.DISCOUNT_PRICE, item.getDiscount());
             post(url, jsonObject.toString());
 
         } catch (JSONException e) {

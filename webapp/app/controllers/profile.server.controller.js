@@ -63,10 +63,17 @@ exports.checkout = function(req, res, next){
         }, function (err, result) {
             if (result.success || result.transaction) {
                 let query = {'username':req.user.username};
-                /*req.user.currentTransaction.transactionId = result.transaction.id;
-                let currentTransaction = {};
-                currentTransaction.transactionId =
-                req.user.transactionHistory.push(new Transaction(currentTransaction));*/
+                req.user.currentTransaction.transactionId = result.transaction.id;
+                let trans = {};
+                trans.transactionId = result.transaction.id;
+                trans.status = req.user.currentTransaction.status;
+                trans.totalAmount = req.user.currentTransaction.totalAmount;
+                req.user.transactionHistory.push(new Transaction(trans));
+                /*req.user.currentTransaction.cartItems.forEach(function(element) {
+                    console.log(element);
+                    console.log(req.user.transactionHistory[req.user.transactionHistory.length-1]);
+                    req.user.transactionHistory[req.user.transactionHistory.length-1].cartItems.push(new Item(element));
+                });*/
                 req.user.currentTransaction.totalAmount = 0;
                 req.user.currentTransaction.cartItems = [];
                 req.user.currentTransaction.transactionId = 0;
@@ -104,7 +111,7 @@ exports.addItem = function (req, res, next) {
 
 exports.deleteItem = function (req,res, next) {
   if (req.user && req.user.currentTransaction!==undefined && req.user.currentTransaction.cartItems.length>0){
-      let cartLength = req.user.currentTransaction.cartItems.length
+      let cartLength = req.user.currentTransaction.cartItems.length;
       let query = {'username':req.user.username};
       let itemId = req.body.id;
       req.user.currentTransaction.cartItems = lodash.remove(req.user.currentTransaction.cartItems, function(obj) {
