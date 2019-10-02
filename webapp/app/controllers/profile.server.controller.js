@@ -124,6 +124,8 @@ exports.deleteItem = function (req,res, next) {
       }else{
           req.user.currentTransaction.totalAmount -= req.body.discountPrice;
           req.user.currentTransaction.totalAmount = Math.round(req.user.currentTransaction.totalAmount * 100) / 100;
+          if (req.user.currentTransaction.totalAmount<0)
+              req.user.currentTransaction.totalAmount = 0;
           User.update(query, req.user, function(err, doc){
               if (err) return res.send(500, { error: err });
               console.log(doc);
