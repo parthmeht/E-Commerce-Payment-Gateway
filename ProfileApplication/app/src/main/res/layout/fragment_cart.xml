@@ -23,10 +23,10 @@
 
     <TextView
         android:id="@+id/fragment_cart_total_price"
-        android:layout_width="68dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="24dp"
-        android:text="PRICE"
+        android:text="@string/price"
         android:textSize="24sp"
         app:layout_constraintBottom_toTopOf="@+id/cart_makePaymentButton"
         app:layout_constraintEnd_toEndOf="parent"
