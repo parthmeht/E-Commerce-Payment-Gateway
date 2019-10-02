@@ -12,6 +12,14 @@
         app:srcCompat="@mipmap/ic_launcher_round" />
 
     <TextView
+        android:id="@+id/fragment_items_item_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="Item Name"
+        android:textSize="18sp" />
+
+    <TextView
         android:id="@+id/fragment_items_item_price"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -20,18 +28,20 @@
         android:textSize="14sp" />
 
     <TextView
-        android:id="@+id/fragment_items_item_name"
+        android:id="@+id/fragment_items_item_discount_price"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="Item Name"
-        android:textSize="18sp" />
+        android:text="Discount Price" />
 
     <Button
         android:id="@+id/fragment_items_item_add_to_cart"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:background="@drawable/rounded_button"
         android:gravity="center|center_horizontal"
-        android:text="Add to Cart" />
+        android:padding="10dp"
+        android:text="Add to Cart"
+        android:textColor="@color/colorWhite" />
 </LinearLayout>

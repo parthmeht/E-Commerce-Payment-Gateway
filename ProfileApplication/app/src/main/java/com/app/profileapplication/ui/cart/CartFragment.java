@@ -251,6 +251,7 @@ public class CartFragment extends Fragment implements CartAdapter.RemoveItem {
                             JSONObject json = new JSONObject(responseString);
                             JSONObject currentItems = json.getJSONObject(Parameters.CURRENT_TRANSACTION);
 //                            Log.d("JSON", currentItems.toString());
+                            Double total = currentItems.getDouble("totalAmount");
                             cartItems.clear();
                             JSONArray jsonArray = currentItems.getJSONArray(Parameters.CART_ITEMS);
                             for (int i =0;i<jsonArray.length();i++){
@@ -270,7 +271,7 @@ public class CartFragment extends Fragment implements CartAdapter.RemoveItem {
                             getActivity().runOnUiThread(() ->{
                                 cartAdapter = new CartAdapter(getContext(), cartItems, CartFragment.this::removeItem);
                                 recyclerView.setAdapter(cartAdapter);
-//                                price.setText("Total : $ " + currentItems.get());
+                                price.setText("Total : $ " + String.valueOf(total));
                             });
 
                         } catch (JSONException e) {

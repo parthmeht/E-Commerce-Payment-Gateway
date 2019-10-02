@@ -27,6 +27,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -54,6 +55,7 @@ public class ItemsFragment extends Fragment implements ItemsAdapter.ItemsCartInt
     Button checkoutButton;
     private Double total = 0.0;
 
+    private static DecimalFormat df2 = new DecimalFormat("#.##");
     ItemsAdapter itemsAdapter;
     public ItemsFragment() {
         // Required empty public constructor
@@ -117,11 +119,16 @@ public class ItemsFragment extends Fragment implements ItemsAdapter.ItemsCartInt
 
                         String key= keys.next();
                         JSONObject single_item = jsonObject.getJSONObject(key);
+                        Double disountedPrice = single_item.getDouble(Parameters.ITEMS_ITEM_PRICE);
+
+                        if (single_item.getDouble(Parameters.ITEMS_ITEM_DISCOUNT)>0)
+                            disountedPrice = single_item.getDouble(Parameters.ITEMS_ITEM_PRICE) - ( single_item.getDouble(Parameters.ITEMS_ITEM_PRICE)* single_item.getDouble(Parameters.ITEMS_ITEM_DISCOUNT)/100);
+
                         Items items1 = new Items(
                                 single_item.getString(Parameters.ITEMS_ITEM_NAME),
                                 single_item.getString(Parameters.ITEMS_ITEM_REGION),
                                 single_item.getString(Parameters.ITEMS_ITEM_ID),
-                                single_item.getDouble(Parameters.ITEMS_ITEM_DISCOUNT),
+                                Double.valueOf(df2.format(disountedPrice)),
                                 single_item.getDouble(Parameters.ITEMS_ITEM_PRICE),
                                 single_item.getString(Parameters.ITEMS_ITEM_PHOTO)
                         );

@@ -1,6 +1,7 @@
 package com.app.profileapplication.adapters;
 
 import android.content.Context;
+import android.graphics.Paint;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,11 +42,13 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder> 
     public void onBindViewHolder(@NonNull ItemsAdapter.ViewHolder holder, int position) {
 
         holder.itemName.setText(items.get(position).getItemName());
-        holder.price.setText(String.valueOf(items.get(position).getPrice()));
+        holder.price.setText("$ " + String.valueOf(items.get(position).getPrice()));
+        holder.price.setPaintFlags(holder.price.getPaintFlags()| Paint.STRIKE_THRU_TEXT_FLAG);
+
         String r =items.get(position).getPhoto().split(".png",2)[0];
         int id= context.getResources().getIdentifier(r, "drawable", context.getPackageName());
-        Log.d("ITEMID", String.valueOf(id));
-        Log.d("ITEMID",r);
+
+        holder.discountPrice.setText("$ "+String.valueOf(items.get(position).getDiscount()));
         if(id>0)
             holder.itemImage.setImageResource(id);
         holder.addToCart.setOnClickListener(view -> {
@@ -61,7 +64,7 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder> 
     }
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        TextView itemName, price;
+        TextView itemName, price, discountPrice;
         ImageView itemImage;
         Button addToCart;
 
@@ -71,6 +74,7 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder> 
             price = itemView.findViewById(R.id.fragment_items_item_price);
             addToCart = itemView.findViewById(R.id.fragment_items_item_add_to_cart);
             itemImage = itemView.findViewById(R.id.fragment_items_item_image);
+            discountPrice = itemView.findViewById(R.id.fragment_items_item_discount_price);
         }
     }
 
