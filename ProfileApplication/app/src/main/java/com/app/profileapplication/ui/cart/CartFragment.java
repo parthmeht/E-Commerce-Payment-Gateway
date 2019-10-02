@@ -174,8 +174,8 @@ public class CartFragment extends Fragment implements CartAdapter.RemoveItem {
                 JSONObject jsonObject = new JSONObject();
                 try {
                     jsonObject.put(Parameters.PAYMENT_METHOD_NONCE, paymentMethodNonce);
-                    jsonObject.put(Parameters.PRICE, total);
-                    post(Parameters.API_URL+"/user/checkout", jsonObject.toString());
+                    //jsonObject.put(Parameters.PRICE, total);
+                    post(Parameters.API_URL_LOCAL+"/user/checkout", jsonObject.toString());
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

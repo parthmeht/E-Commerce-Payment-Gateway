@@ -15,7 +15,11 @@ var TransactionSchema = new Schema({
         type: Number,
         required: 'Total amount is required'
     },
-    cartItems: [item]
+    transactionId: String,
+    cartItems: [{
+        type: Object,
+        ref: "Item"
+    }]
 });
 
 TransactionSchema.set('toJSON', {

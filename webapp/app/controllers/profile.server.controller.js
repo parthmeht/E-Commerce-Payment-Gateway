@@ -3,7 +3,7 @@
 
 // Load the module dependencies
 
-var User = require('mongoose').model('User'),
+let User = require('mongoose').model('User'),
     config = require('../../config/config'),
     gateway = require('../../config/gateway'),
     braintree = require('braintree'),
@@ -11,7 +11,7 @@ var User = require('mongoose').model('User'),
     Item = require('mongoose').model('Item'),
     lodash = require('lodash');
 
-    var TRANSACTION_SUCCESS_STATUSES = [
+let TRANSACTION_SUCCESS_STATUSES = [
         braintree.Transaction.Status.Authorizing,
         braintree.Transaction.Status.Authorized,
         braintree.Transaction.Status.Settled,
@@ -24,8 +24,8 @@ var User = require('mongoose').model('User'),
 exports.edit = function(req, res, next) {
     if (req.user) {
         //var user = new User(req.body);
-        var message = null;
-        var query = {'username':req.user.username};
+        let message = null;
+        let query = {'username':req.user.username};
         req.user.firstName = req.body.firstName;
         req.user.lastName = req.body.lastName;
         req.user.city = req.body.city;
@@ -49,8 +49,39 @@ exports.getClientToken = function(req, res, next) {
 };
 
 exports.checkout = function(req, res, next){
-    var nonceFromTheClient = req.body.payment_method_nonce;
+    if (req.user){
+        let transactionErrors;
+        let amount = req.user.currentTransaction.totalAmount; // In production you should not take amounts directly from clients
+        let nonce = req.body.payment_method_nonce;
 
+        gateway.transaction.sale({
+            amount: amount,
+            paymentMethodNonce: nonce,
+            options: {
+                submitForSettlement: true
+            }
+        }, function (err, result) {
+            if (result.success || result.transaction) {
+                let query = {'username':req.user.username};
+                /*req.user.currentTransaction.transactionId = result.transaction.id;
+                let currentTransaction = {};
+                currentTransaction.transactionId =
+                req.user.transactionHistory.push(new Transaction(currentTransaction));*/
+                req.user.currentTransaction.totalAmount = 0;
+                req.user.currentTransaction.cartItems = [];
+                req.user.currentTransaction.transactionId = 0;
+                User.update(query, req.user, function(err, doc){
+                    if (err) return res.send(500, { error: err });
+                    console.log(doc);
+                    let message = "Your transaction is processed successfully!!";
+                    return res.send({message});
+                });
+            } else {
+                transactionErrors = result.errors.deepErrors();
+                res.send(500,{message:transactionErrors});
+            }
+        });
+    }
 };
 
 exports.addItem = function (req, res, next) {
@@ -58,9 +89,9 @@ exports.addItem = function (req, res, next) {
         let query = {'username':req.user.username};
         let item = new Item(req.body);
         if(isNaN(req.user.currentTransaction.totalAmount))
-            req.user.currentTransaction.totalAmount = item.discountPrice;
+            req.user.currentTransaction.totalAmount = item.discount;
         else
-            req.user.currentTransaction.totalAmount += item.discountPrice;
+            req.user.currentTransaction.totalAmount += item.discount;
         req.user.currentTransaction.cartItems.push(item);
         User.update(query, req.user, function(err, doc){
             if (err) return res.send(500, { error: err });

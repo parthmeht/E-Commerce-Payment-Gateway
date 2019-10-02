@@ -7,7 +7,7 @@ var mongoose = require('mongoose'),
 	Schema = mongoose.Schema,
 	autoIncrement = require('mongoose-auto-increment'),
 	gateway = require('../../config/gateway'),
-	transaction = require('./transaction.server.model'),
+	Transaction = require('./transaction.server.model'),
 	Object = Schema.Types.Object;
 
 
@@ -77,7 +77,10 @@ var UserSchema = new Schema({
 		type: Object,
 		ref: "Transaction"
 	},
-	transactionHistory: [transaction]
+	transactionHistory: [{
+		type: Object,
+		ref: "Transaction"
+	}]
 });
 
 // Set the 'fullname' virtual property
