@@ -97,8 +97,10 @@ exports.addItem = function (req, res, next) {
         let item = new Item(req.body);
         if(isNaN(req.user.currentTransaction.totalAmount))
             req.user.currentTransaction.totalAmount = item.discount;
-        else
-            req.user.currentTransaction.totalAmount += item.discount;
+        else{
+            req.user.currentTransaction.totalAmount = req.user.currentTransaction.totalAmount + item.discount;
+            req.user.currentTransaction.totalAmount = Math.round(req.user.currentTransaction.totalAmount * 100) / 100;
+        }
         req.user.currentTransaction.cartItems.push(item);
         User.update(query, req.user, function(err, doc){
             if (err) return res.send(500, { error: err });
@@ -121,6 +123,7 @@ exports.deleteItem = function (req,res, next) {
           return res.send({message:"Item id not found in the cart"});
       }else{
           req.user.currentTransaction.totalAmount -= req.body.discountPrice;
+          req.user.currentTransaction.totalAmount = Math.round(req.user.currentTransaction.totalAmount * 100) / 100;
           User.update(query, req.user, function(err, doc){
               if (err) return res.send(500, { error: err });
               console.log(doc);

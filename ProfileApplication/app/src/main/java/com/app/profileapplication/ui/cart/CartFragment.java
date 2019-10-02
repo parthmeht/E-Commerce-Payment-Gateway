@@ -304,7 +304,7 @@ public class CartFragment extends Fragment implements CartAdapter.RemoveItem {
         cartAdapter.notifyDataSetChanged();
         try {
             jsonObject.put("id", item.get_id());
-            jsonObject.put(Parameters.DISCOUNT_PRICE, item.getDiscount());
+            jsonObject.put(Parameters.DISCOUNT_PRICE, item.getPrice());
             post(url, jsonObject.toString());
 
         } catch (JSONException e) {
