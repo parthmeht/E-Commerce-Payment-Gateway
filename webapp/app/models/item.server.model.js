@@ -16,8 +16,13 @@ var ItemSchema = new Schema({
     },
     region: String,
     photo: String,
-    discount: Number
+    discount: Number,
+    discountPrice: Number
+});
 
+ItemSchema.set('toJSON', {
+    getters: true,
+    virtuals: true
 });
 
 module.exports = mongoose.model('Item', ItemSchema);

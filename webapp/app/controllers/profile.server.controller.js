@@ -2,10 +2,14 @@
 'use strict';
 
 // Load the module dependencies
+
 var User = require('mongoose').model('User'),
     config = require('../../config/config'),
     gateway = require('../../config/gateway'),
-    braintree = require('braintree');
+    braintree = require('braintree'),
+    Transaction = require('mongoose').model('Transaction'),
+    Item = require('mongoose').model('Item'),
+    lodash = require('lodash');
 
     var TRANSACTION_SUCCESS_STATUSES = [
         braintree.Transaction.Status.Authorizing,
@@ -47,4 +51,36 @@ exports.getClientToken = function(req, res, next) {
 exports.checkout = function(req, res, next){
     var nonceFromTheClient = req.body.payment_method_nonce;
 
+};
+
+exports.addItem = function (req, res, next) {
+    if(req.user){
+        let query = {'username':req.user.username};
+        let item = new Item(req.body);
+        req.user.currentTransaction.totalAmount += item.discountPrice;
+        req.user.currentTransaction.cartItems.push(item);
+        User.update(query, req.user, function(err, doc){
+            if (err) return res.send(500, { error: err });
+            console.log(doc);
+            let message = "Cart updated successfully!!";
+            return res.send({message});
+        });
+    }
+};
+
+exports.deleteItem = function (req,res, next) {
+  if (req.user){
+      let query = {'username':req.user.username};
+      let itemId = req.body.id;
+      req.user.currentTransaction.totalAmount -= req.body.discountPrice;
+      req.user.currentTransaction.cartItems = lodash.remove(req.user.currentTransaction.cartItems, function(obj) {
+          return obj._id.toString() !== itemId;
+      });
+      User.update(query, req.user, function(err, doc){
+          if (err) return res.send(500, { error: err });
+          console.log(doc);
+          let message = "Cart updated successfully!!";
+          return res.send({message});
+      });
+  }
 };

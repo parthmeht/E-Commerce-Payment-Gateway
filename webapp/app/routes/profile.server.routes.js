@@ -21,5 +21,9 @@ router.get('/client_token', profile.getClientToken);
 
 router.post("/checkout", profile.checkout);
 
+router.post("/addItem", profile.addItem);
+
+router.post("/deleteItem", profile.deleteItem);
+
 module.exports = router;
 

@@ -6,7 +6,10 @@ var mongoose = require('mongoose'),
 	crypto = require('crypto'),
 	Schema = mongoose.Schema,
 	autoIncrement = require('mongoose-auto-increment'),
-	gateway = require('../../config/gateway');
+	gateway = require('../../config/gateway'),
+	transaction = require('./transaction.server.model'),
+	Object = Schema.Types.Object;
+
 
 // Define a new 'UserSchema'
 var UserSchema = new Schema({
@@ -70,6 +73,11 @@ var UserSchema = new Schema({
 	},
 	resetPasswordToken: String,
 	resetPasswordExpires: Date,
+	currentTransaction : {
+		type: Object,
+		ref: "Transaction"
+	},
+	transactionHistory: [transaction]
 });
 
 // Set the 'fullname' virtual property
