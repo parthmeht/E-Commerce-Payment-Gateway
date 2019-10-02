@@ -57,7 +57,10 @@ exports.addItem = function (req, res, next) {
     if(req.user){
         let query = {'username':req.user.username};
         let item = new Item(req.body);
-        req.user.currentTransaction.totalAmount += item.discountPrice;
+        if(isNaN(req.user.currentTransaction.totalAmount))
+            req.user.currentTransaction.totalAmount = item.discountPrice;
+        else
+            req.user.currentTransaction.totalAmount += item.discountPrice;
         req.user.currentTransaction.cartItems.push(item);
         User.update(query, req.user, function(err, doc){
             if (err) return res.send(500, { error: err });
@@ -69,18 +72,25 @@ exports.addItem = function (req, res, next) {
 };
 
 exports.deleteItem = function (req,res, next) {
-  if (req.user){
+  if (req.user && req.user.currentTransaction!==undefined && req.user.currentTransaction.cartItems.length>0){
+      let cartLength = req.user.currentTransaction.cartItems.length
       let query = {'username':req.user.username};
       let itemId = req.body.id;
-      req.user.currentTransaction.totalAmount -= req.body.discountPrice;
       req.user.currentTransaction.cartItems = lodash.remove(req.user.currentTransaction.cartItems, function(obj) {
           return obj._id.toString() !== itemId;
       });
-      User.update(query, req.user, function(err, doc){
-          if (err) return res.send(500, { error: err });
-          console.log(doc);
-          let message = "Cart updated successfully!!";
-          return res.send({message});
-      });
+      if (cartLength===req.user.currentTransaction.cartItems.length){
+          return res.send({message:"Item id not found in the cart"});
+      }else{
+          req.user.currentTransaction.totalAmount -= req.body.discountPrice;
+          User.update(query, req.user, function(err, doc){
+              if (err) return res.send(500, { error: err });
+              console.log(doc);
+              let message = "Cart updated successfully!!";
+              return res.send({message});
+          });
+      }
+  }else{
+      return res.send(500,{message:"Can't perform this operation"});
   }
 };

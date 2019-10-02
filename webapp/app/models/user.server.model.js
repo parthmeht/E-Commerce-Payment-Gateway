@@ -96,7 +96,7 @@ UserSchema.pre('save', async function (next) {
 		this.salt = genRandomString(16);
 		this.password = this.hashPassword(this.password);
 	}
-
+	this.currentTransaction = new transaction();
 	let response = await gateway.customer.create({
 		firstName: this.firstName,
 		lastName: this.lastName,
