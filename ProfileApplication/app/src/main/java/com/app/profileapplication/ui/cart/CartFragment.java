@@ -69,6 +69,7 @@ public class CartFragment extends Fragment implements CartAdapter.RemoveItem {
     private RecyclerView recyclerView;
     private Double total;
     private TextView price;
+    ArrayList<CartItems> cartItems = new ArrayList<>();
     public static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
     String message;
 
@@ -245,11 +246,12 @@ public class CartFragment extends Fragment implements CartAdapter.RemoveItem {
                     try (ResponseBody responseBody = response.body()) {
                         String responseString = responseBody.string();
                         Log.v(TAG, responseString);
-                        ArrayList<CartItems> cartItems = new ArrayList<>();
+
                         try {
                             JSONObject json = new JSONObject(responseString);
                             JSONObject currentItems = json.getJSONObject(Parameters.CURRENT_TRANSACTION);
 //                            Log.d("JSON", currentItems.toString());
+                            cartItems.clear();
                             JSONArray jsonArray = currentItems.getJSONArray(Parameters.CART_ITEMS);
                             for (int i =0;i<jsonArray.length();i++){
                                 JSONObject single_item = jsonArray.getJSONObject(i);
@@ -281,14 +283,17 @@ public class CartFragment extends Fragment implements CartAdapter.RemoveItem {
 
 
     @Override
-    public void removeItem(CartItems cartItems) {
+    public void removeItem(CartItems item, int position) {
         String url = Parameters.API_URL + "/user/deleteItem";
         JSONObject jsonObject = new JSONObject();
+
+        cartItems.remove(item);
+        cartAdapter.notifyDataSetChanged();
         try {
-            jsonObject.put("id", cartItems.get_id());
+            jsonObject.put("id", item.get_id());
             jsonObject.put(Parameters.DISCOUNT_PRICE, 1);
             post(url, jsonObject.toString());
-            getData(Parameters.API_URL + "/user/profile");
+
         } catch (JSONException e) {
             e.printStackTrace();
         }

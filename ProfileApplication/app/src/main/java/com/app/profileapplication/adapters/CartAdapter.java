@@ -51,7 +51,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder>{
             holder.itemImage.setImageResource(id);
         holder.remove.setOnClickListener(view -> {
             Log.d("Remove", "Selected "+ items.get(position).get_id());
-            removeItem.removeItem(items.get(position));
+            removeItem.removeItem(items.get(position), position);
         });
     }
 
@@ -75,7 +75,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder>{
     }
 
     public interface RemoveItem{
-        void removeItem(CartItems cartItems);
+        void removeItem(CartItems cartItems, int position);
     }
 
 }
