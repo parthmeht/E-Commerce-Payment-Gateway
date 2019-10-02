@@ -130,6 +130,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 itemsFragment.setArguments(bundle);
                 fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.replace(R.id.nav_host_fragment, itemsFragment).addToBackStack(null).commit();
+                toolbar.setTitle(R.string.items);
                 navigationView.setCheckedItem(R.id.nav_item);
                 break;
             case R.id.nav_cart:
@@ -137,6 +138,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 cartFragment.setArguments(bundle);
                 fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.replace(R.id.nav_host_fragment, cartFragment).addToBackStack(null).commit();
+                toolbar.setTitle(R.string.cart);
+                navigationView.setCheckedItem(R.id.nav_cart);
                 break;
         }
         drawer.closeDrawer(GravityCompat.START);

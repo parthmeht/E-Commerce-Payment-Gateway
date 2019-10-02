@@ -1,6 +1,7 @@
 package com.app.profileapplication.adapters;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,7 +50,8 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder>{
         if(id>0)
             holder.itemImage.setImageResource(id);
         holder.remove.setOnClickListener(view -> {
-
+            Log.d("Remove", "Selected "+ items.get(position).get_id());
+            removeItem.removeItem(items.get(position));
         });
     }
 
@@ -59,15 +61,15 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder>{
     }
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        TextView itemName, price;
+        TextView itemName, price, remove;
         ImageView itemImage;
-        ImageButton remove;
+        //ImageButton remove;
 
         ViewHolder(View itemView) {
             super(itemView);
             itemName = itemView.findViewById(R.id.fragment_cart_item_name);
             price = itemView.findViewById(R.id.fragment_cart_item_price);
-            remove = itemView.findViewById(R.id.fragment_cart_delete_button);
+            remove = itemView.findViewById(R.id.fragment_cart_delete);
             itemImage = itemView.findViewById(R.id.fragment_cart_item_image);
         }
     }
