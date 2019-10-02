@@ -111,11 +111,12 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(Parameters.TOKEN, token);
+        bundle.putSerializable(Parameters.USER_ID, user);
         switch (menuItem.getItemId()) {
             case R.id.nav_profile:
-                Bundle bundle = new Bundle();
-                bundle.putSerializable(Parameters.TOKEN, token);
-                bundle.putSerializable(Parameters.USER_ID, user);
+
                 ProfileFragment profileFragment = new ProfileFragment();
                 profileFragment.setArguments(bundle);
                 fragmentTransaction = fragmentManager.beginTransaction();
@@ -124,16 +125,19 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 navigationView.setCheckedItem(R.id.nav_profile);
                 break;
             case R.id.nav_item:
+
                 ItemsFragment itemsFragment = new ItemsFragment();
+                itemsFragment.setArguments(bundle);
                 fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.replace(R.id.nav_host_fragment, itemsFragment).addToBackStack(null).commit();
                 navigationView.setCheckedItem(R.id.nav_item);
                 break;
-//            case R.id.nav_cart:
-//                CartFragment cartFragment = new CartFragment();
-//                fragmentTransaction = fragmentManager.beginTransaction();
-//                fragmentTransaction.replace(R.id.nav_host_fragment, cartFragment).addToBackStack(null).commit();
-//                break;
+            case R.id.nav_cart:
+                CartFragment cartFragment = new CartFragment();
+                cartFragment.setArguments(bundle);
+                fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.nav_host_fragment, cartFragment).addToBackStack(null).commit();
+                break;
         }
         drawer.closeDrawer(GravityCompat.START);
         return true;

@@ -4,8 +4,22 @@ import java.io.Serializable;
 
 public class Items implements Serializable {
 
-    String itemName, region, id, image;
-    Double discount, price;
+    String itemName, region, id, photo;
+    Double discount;
+
+    @Override
+    public String toString() {
+        return "{" +
+                "name='" + itemName + '\'' +
+                ", region='" + region + '\'' +
+                ", id='" + id + '\'' +
+                ", photo='" + photo + '\'' +
+                ", discount=" + discount +
+                ", price=" + price +
+                '}';
+    }
+
+    Double price;
 
     public String getItemName() {
         return itemName;
@@ -27,12 +41,12 @@ public class Items implements Serializable {
         return id;
     }
 
-    public String getImage() {
-        return image;
+    public String getPhoto() {
+        return photo;
     }
 
-    public void setImage(String image) {
-        this.image = image;
+    public void setPhoto(String image) {
+        this.photo = image;
     }
 
     public Items(String itemName, String region, String id, Double discount, Double price, String image) {
@@ -41,7 +55,7 @@ public class Items implements Serializable {
         this.id = id;
         this.discount = discount;
         this.price = price;
-        this.image = image;
+        this.photo = image;
     }
 
     public void setId(String id) {

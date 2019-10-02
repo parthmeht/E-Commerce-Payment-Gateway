@@ -47,6 +47,9 @@ public final class Parameters {
     public static final String CLIENT_TOKEN = "clientToken";
 
     public static final String PRICE = "price";
+    public static final String CURRENT_TRANSACTION = "currentTransaction";
+    public static final String CART_ITEMS = "cartItems";
+    public static final String DISCOUNT_PRICE = "discountPrice";
 
     public static final String PAYMENT_METHOD_NONCE = "payment_method_nonce";
 

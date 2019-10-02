@@ -1,11 +1,9 @@
 package com.app.profileapplication.adapters;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -14,18 +12,22 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.app.profileapplication.R;
-import com.app.profileapplication.models.Items;
+import com.app.profileapplication.models.CartItems;
 
 import java.util.ArrayList;
+
+import okhttp3.Callback;
 
 public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder>{
 
     Context context;
+    RemoveItem removeItem;
 
-    ArrayList<Items> items;
-    public CartAdapter(Context context, ArrayList<Items> items){
+    ArrayList<CartItems> items;
+    public CartAdapter(Context context, ArrayList<CartItems> items, RemoveItem removeItem){
         this.context = context;
         this.items= items;
+        this.removeItem = removeItem;
 //        this.cartAdapterInterface = cartAdapterInterface;
     }
 
@@ -42,9 +44,11 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder>{
 
         holder.itemName.setText(items.get(position).getItemName());
         holder.price.setText("$ " + String.valueOf(items.get(position).getPrice()));
-        Log.d("ITEMSNAME", items.get(position).getItemName());
+        String r =items.get(position).getPhoto().split(".png",2)[0];
+        int id= context.getResources().getIdentifier(r, "drawable", context.getPackageName());
+        if(id>0)
+            holder.itemImage.setImageResource(id);
         holder.remove.setOnClickListener(view -> {
-
 
         });
     }
@@ -66,6 +70,10 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder>{
             remove = itemView.findViewById(R.id.fragment_cart_delete_button);
             itemImage = itemView.findViewById(R.id.fragment_cart_item_image);
         }
+    }
+
+    public interface RemoveItem{
+        void removeItem(CartItems cartItems);
     }
 
 }

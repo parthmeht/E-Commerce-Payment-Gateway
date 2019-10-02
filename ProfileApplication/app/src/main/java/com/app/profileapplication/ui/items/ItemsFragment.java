@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.app.profileapplication.R;
 import com.app.profileapplication.adapters.ItemsAdapter;
@@ -31,9 +32,12 @@ import java.util.Iterator;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 
 /**
@@ -43,6 +47,10 @@ public class ItemsFragment extends Fragment implements ItemsAdapter.ItemsCartInt
 
     RecyclerView recyclerView;
     ArrayList<Items> itemsAdded = new ArrayList<>();
+    public static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
+    private OkHttpClient client = new OkHttpClient();
+    String message;
+    String token;
     Button checkoutButton;
     private Double total = 0.0;
 
@@ -60,12 +68,14 @@ public class ItemsFragment extends Fragment implements ItemsAdapter.ItemsCartInt
         View view = inflater.inflate(R.layout.fragment_items, container, false);
 
         String responseString = getData(Parameters.API_URL+"/item/getitems", view);
+        token = getArguments().getString(Parameters.TOKEN);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
         checkoutButton = view.findViewById(R.id.fragment_items_checkout);
         checkoutButton.setOnClickListener(view1 -> {
             Bundle bundle = new Bundle();
             bundle.putSerializable(Parameters.ITEM_LIST, itemsAdded);
             bundle.putDouble(Parameters.PRICE, total);
+            bundle.putString(Parameters.TOKEN, token);
 
             CartFragment fragment = new CartFragment();
             fragment.setArguments(bundle);
@@ -140,9 +150,54 @@ public class ItemsFragment extends Fragment implements ItemsAdapter.ItemsCartInt
     public void addToCart(Items items) {
         itemsAdded.add(items);
         total+=items.getPrice();
-        for (Items i: itemsAdded)
-            Log.d("Item", i.getItemName());
+        String url = Parameters.API_URL+"/user/addItem";
+        String json = items.toString();
+        Log.d("items11", json);
+        try {
+            JSONObject jsonObject = new JSONObject(json);
+            jsonObject.put("discountPrice", 1);
+            post(url, jsonObject.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
+//        for (Items i: itemsAdded)
+//            Log.d("Item", i.getItemName());
+
+
+    }
+
+    public void post(String url, String json) {
+        RequestBody body = RequestBody.create(json, JSON);
+        Request request = new Request.Builder()
+                .url(url)
+                .header("Authorization",Parameters.BEARER + " " + token)
+                .post(body)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override public void onResponse(Call call, Response response) throws IOException {
+                try (ResponseBody responseBody = response.body()) {
+                    if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+
+                    String responseString = responseBody.string();
+
+                    try {
+                        JSONObject json = new JSONObject(responseString);
+                        //String token = (String) json.get(Parameters.TOKEN);
+                        message = (String) json.get(Parameters.MESSAGE);
+                        Log.d("RESPONSE", message);
+                    } catch (JSONException e){
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+        });
     }
 }
 

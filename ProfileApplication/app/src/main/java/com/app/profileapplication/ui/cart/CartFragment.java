@@ -23,18 +23,23 @@ import com.app.profileapplication.MainActivity;
 import com.app.profileapplication.R;
 import com.app.profileapplication.SignUpActivity;
 import com.app.profileapplication.adapters.CartAdapter;
+import com.app.profileapplication.models.CartItems;
 import com.app.profileapplication.models.Items;
+import com.app.profileapplication.models.User;
+import com.app.profileapplication.ui.profile.ProfileFragment;
 import com.app.profileapplication.utilities.Parameters;
 import com.braintreepayments.api.BraintreeFragment;
 import com.braintreepayments.api.dropin.DropInActivity;
 import com.braintreepayments.api.dropin.DropInRequest;
 import com.braintreepayments.api.dropin.DropInResult;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -50,7 +55,7 @@ import okhttp3.ResponseBody;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class CartFragment extends Fragment {
+public class CartFragment extends Fragment implements CartAdapter.RemoveItem {
 
     private View view;
     private String TAG = "CartFragment";
@@ -59,7 +64,7 @@ public class CartFragment extends Fragment {
     private BraintreeFragment mBraintreeFragment;
     private OkHttpClient client = new OkHttpClient();
     private SharedPreferences preferences;
-    private String client_token, token;
+    private String client_token, token, userToken;
     private ArrayList<Items> itemsArrayList;
     private RecyclerView recyclerView;
     private Double total;
@@ -78,15 +83,19 @@ public class CartFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_cart, container, false);
-        itemsArrayList = (ArrayList<Items>) getArguments().getSerializable(Parameters.ITEM_LIST);
+
+        userToken = getArguments().getString(Parameters.TOKEN);
         total = getArguments().getDouble(Parameters.PRICE);
-        Log.d("ITEMSARRAYLIST123", String.valueOf(itemsArrayList.size()));
+//        Log.d("ITEMSARRAYLIST123", String.valueOf(itemsArrayList.size()));
+
+        getData(Parameters.API_URL + "/user/profile");
+
         recyclerView = view.findViewById(R.id.fragment_cart_recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()))  ;
-        cartAdapter = new CartAdapter(getContext(), itemsArrayList);
-        recyclerView.setAdapter(cartAdapter);
+//        cartAdapter = new CartAdapter(getContext(), itemsArrayList);
+//        recyclerView.setAdapter(cartAdapter);
         price = view.findViewById(R.id.fragment_cart_total_price);
-        price.setText("Total : $ " + total.toString());
+
 
 
         makePayment = view.findViewById(R.id.cart_makePaymentButton);
@@ -220,4 +229,68 @@ public class CartFragment extends Fragment {
     }
 
 
+    public void getData(String url){
+
+            Request request = new Request.Builder()
+                    .url(url)
+                    .header("Authorization",Parameters.BEARER + " " + userToken)
+                    .build();
+
+            client.newCall(request).enqueue(new Callback() {
+                @Override public void onFailure(Call call, IOException e) {
+                    e.printStackTrace();
+                }
+
+                @Override public void onResponse(Call call, Response response) throws IOException {
+                    try (ResponseBody responseBody = response.body()) {
+                        String responseString = responseBody.string();
+                        Log.v(TAG, responseString);
+                        ArrayList<CartItems> cartItems = new ArrayList<>();
+                        try {
+                            JSONObject json = new JSONObject(responseString);
+                            JSONObject currentItems = json.getJSONObject(Parameters.CURRENT_TRANSACTION);
+//                            Log.d("JSON", currentItems.toString());
+                            JSONArray jsonArray = currentItems.getJSONArray(Parameters.CART_ITEMS);
+                            for (int i =0;i<jsonArray.length();i++){
+                                JSONObject single_item = jsonArray.getJSONObject(i);
+                                Log.d("JSON", single_item.toString());
+                                CartItems items = new CartItems(
+                                        single_item.getString(Parameters.ITEMS_ITEM_NAME),
+                                        single_item.getString(Parameters.ITEMS_ITEM_REGION),
+                                        single_item.getString(Parameters.ITEMS_ITEM_ID),
+                                        single_item.getString(Parameters.ITEMS_ITEM_PHOTO),
+                                        single_item.getDouble(Parameters.ITEMS_ITEM_PRICE),
+                                        single_item.getDouble(Parameters.ITEMS_ITEM_DISCOUNT),
+                                        single_item.getInt(Parameters.DISCOUNT_PRICE)
+                                );
+                                cartItems.add(items);
+                            }
+                            getActivity().runOnUiThread(() ->{
+                                cartAdapter = new CartAdapter(getContext(), cartItems, CartFragment.this::removeItem);
+                                recyclerView.setAdapter(cartAdapter);
+//                                price.setText("Total : $ " + currentItems.get());
+                            });
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            });
+    }
+
+
+    @Override
+    public void removeItem(CartItems cartItems) {
+        String url = Parameters.API_URL + "/user/deleteItem";
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("id", cartItems.get_id());
+            jsonObject.put(Parameters.DISCOUNT_PRICE, 1);
+            post(url, jsonObject.toString());
+            getData(Parameters.API_URL + "/user/profile");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
 }

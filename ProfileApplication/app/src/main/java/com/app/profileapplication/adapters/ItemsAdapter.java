@@ -1,7 +1,7 @@
 package com.app.profileapplication.adapters;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,8 +42,12 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder> 
 
         holder.itemName.setText(items.get(position).getItemName());
         holder.price.setText(String.valueOf(items.get(position).getPrice()));
-        String r =items.get(position).getImage();
+        String r =items.get(position).getPhoto().split(".png",2)[0];
         int id= context.getResources().getIdentifier(r, "drawable", context.getPackageName());
+        Log.d("ITEMID", String.valueOf(id));
+        Log.d("ITEMID",r);
+        if(id>0)
+            holder.itemImage.setImageResource(id);
         holder.addToCart.setOnClickListener(view -> {
             itemsCartInterface.addToCart(items.get(position));
         });
