@@ -3,8 +3,10 @@ package com.app.profileapplication.ui.cart;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -86,20 +88,26 @@ public class CartFragment extends Fragment implements CartAdapter.RemoveItem {
         view = inflater.inflate(R.layout.fragment_cart, container, false);
 
         userToken = getArguments().getString(Parameters.TOKEN);
-        //total = getArguments().getDouble(Parameters.PRICE);
-//        Log.d("ITEMSARRAYLIST123", String.valueOf(itemsArrayList.size()));
+        total = getArguments().getDouble(Parameters.PRICE);
 
         getData(Parameters.API_URL + "/user/profile");
 
         recyclerView = view.findViewById(R.id.fragment_cart_recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext())) ;
-//        cartAdapter = new CartAdapter(getContext(), itemsArrayList);
-//        recyclerView.setAdapter(cartAdapter);
+
         price = view.findViewById(R.id.fragment_cart_total_price);
-
-
-
         makePayment = view.findViewById(R.id.cart_makePaymentButton);
+        if(total>0){
+            makePayment.setEnabled(true);
+            makePayment.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+            //makePayment.setBackground(ContextCompat.getDrawable(getActivity(),R.drawable.rounded_button));
+            makePayment.setClickable(true);
+        }else{
+            makePayment.setEnabled(false);
+            makePayment.setBackgroundColor(Color.GRAY);
+            //makePayment.setBackground(ContextCompat.getDrawable(getActivity(),R.drawable.rounded_disablebutton));
+            makePayment.setClickable(false);
+        }
         preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
         token = preferences.getString(Parameters.TOKEN, "");
 
@@ -226,6 +234,9 @@ public class CartFragment extends Fragment implements CartAdapter.RemoveItem {
                                 cartAdapter.notifyDataSetChanged();
                                 Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
                                 price.setText("Total : $ " + 0.0);
+                                makePayment.setEnabled(false);
+                                makePayment.setBackgroundColor(Color.GRAY);
+                                //makePayment.setBackground(ContextCompat.getDrawable(getActivity(),R.drawable.rounded_disablebutton));
                                 makePayment.setClickable(false);
                             });
 
@@ -284,6 +295,17 @@ public class CartFragment extends Fragment implements CartAdapter.RemoveItem {
                                 cartAdapter = new CartAdapter(getContext(), cartItems, CartFragment.this::removeItem);
                                 recyclerView.setAdapter(cartAdapter);
                                 price.setText("Total : $ " + String.valueOf(total));
+                                if(total>0){
+                                    makePayment.setEnabled(true);
+                                    //makePayment.setBackground(ContextCompat.getDrawable(getActivity(),R.drawable.rounded_button));
+                                    makePayment.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                                    makePayment.setClickable(true);
+                                }else{
+                                    makePayment.setEnabled(false);
+                                    makePayment.setBackgroundColor(Color.GRAY);
+                                    //makePayment.setBackground(ContextCompat.getDrawable(getActivity(),R.drawable.rounded_disablebutton));
+                                    makePayment.setClickable(false);
+                                }
                             });
 
                         } catch (JSONException e) {
