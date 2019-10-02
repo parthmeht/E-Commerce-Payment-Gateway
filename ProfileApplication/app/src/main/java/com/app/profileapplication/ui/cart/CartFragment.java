@@ -92,7 +92,7 @@ public class CartFragment extends Fragment implements CartAdapter.RemoveItem {
         getData(Parameters.API_URL + "/user/profile");
 
         recyclerView = view.findViewById(R.id.fragment_cart_recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()))  ;
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext())) ;
 //        cartAdapter = new CartAdapter(getContext(), itemsArrayList);
 //        recyclerView.setAdapter(cartAdapter);
         price = view.findViewById(R.id.fragment_cart_total_price);
@@ -220,6 +220,18 @@ public class CartFragment extends Fragment implements CartAdapter.RemoveItem {
 
                         message = (String) json.get(Parameters.MESSAGE);
                         Log.d("PAYMENT-RESPONSE", message);
+                        if(message.equals(Parameters.PAYMENT_SUCCESSFUL)){
+                            cartItems.clear();
+                            getActivity().runOnUiThread(()->{
+                                cartAdapter.notifyDataSetChanged();
+                                Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
+                                price.setText("Total : $ " + 0.0);
+                                makePayment.setClickable(false);
+                            });
+
+
+                        }
+
                     } catch (JSONException e){
                         e.printStackTrace();
                     }

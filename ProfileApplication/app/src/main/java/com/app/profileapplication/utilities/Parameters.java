@@ -53,6 +53,6 @@ public final class Parameters {
 
     public static final String PAYMENT_METHOD_NONCE = "payment_method_nonce";
 
-
+    public static final String PAYMENT_SUCCESSFUL = "Your transaction is processed successfully!!";
     public static final String ITEM_LIST = "itemList";
 }
