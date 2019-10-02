@@ -19,7 +19,12 @@ var TransactionSchema = new Schema({
     cartItems: [{
         type: Object,
         ref: "Item"
-    }]
+    }],
+    created: {
+        type: Date,
+        // Create a default 'created' value
+        default: Date.now
+    }
 });
 
 TransactionSchema.set('toJSON', {
