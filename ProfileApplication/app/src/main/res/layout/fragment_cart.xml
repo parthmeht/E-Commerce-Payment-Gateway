@@ -39,7 +39,7 @@
         android:layout_height="wrap_content"
         android:text="@string/price"
         android:textSize="24sp"
-        app:layout_constraintBottom_toTopOf="@+id/button3"
+        app:layout_constraintBottom_toTopOf="@+id/cart_makePayment_stripe"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
