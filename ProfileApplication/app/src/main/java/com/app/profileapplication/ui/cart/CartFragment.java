@@ -221,14 +221,20 @@ public class CartFragment extends Fragment implements CartAdapter.RemoveItem {
                         Log.v(TAG,responseHeaders.name(i) + ": " + responseHeaders.value(i));
                     }
 
+                    int responseStatus = response.code();
                     String responseString = responseBody.string();
-                    Log.v(TAG,responseString);
+                    Log.v(TAG,String.valueOf(responseStatus));
                     try {
                         JSONObject json = new JSONObject(responseString);
 
                         message = (String) json.get(Parameters.MESSAGE);
                         Log.d("PAYMENT-RESPONSE", message);
-                        if(message.equals(Parameters.PAYMENT_SUCCESSFUL)){
+                        if (responseStatus == 500){
+                            getActivity().runOnUiThread(()->{
+                                Toast.makeText(getContext(), "Payment Failed", Toast.LENGTH_LONG).show();
+                            });
+                        }
+                        else if(message.equals(Parameters.PAYMENT_SUCCESSFUL)){
                             cartItems.clear();
                             getActivity().runOnUiThread(()->{
                                 cartAdapter.notifyDataSetChanged();
@@ -274,7 +280,7 @@ public class CartFragment extends Fragment implements CartAdapter.RemoveItem {
                             JSONObject json = new JSONObject(responseString);
                             JSONObject currentItems = json.getJSONObject(Parameters.CURRENT_TRANSACTION);
 //                            Log.d("JSON", currentItems.toString());
-                            Double total = currentItems.getDouble("totalAmount");
+                            total = currentItems.getDouble("totalAmount");
                             cartItems.clear();
                             JSONArray jsonArray = currentItems.getJSONArray(Parameters.CART_ITEMS);
                             for (int i =0;i<jsonArray.length();i++){
@@ -323,6 +329,8 @@ public class CartFragment extends Fragment implements CartAdapter.RemoveItem {
         JSONObject jsonObject = new JSONObject();
 
         cartItems.remove(item);
+        total -=item.getPrice();
+        price.setText("Total : $ " + String.valueOf(total));
         cartAdapter.notifyDataSetChanged();
         try {
             jsonObject.put("id", item.get_id());
