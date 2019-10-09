@@ -25,5 +25,7 @@ router.post("/addItem", profile.addItem);
 
 router.post("/deleteItem", profile.deleteItem);
 
+router.get("/listAllCards", profile.listAllCards);
+
 module.exports = router;
 

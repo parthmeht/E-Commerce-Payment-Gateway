@@ -11,6 +11,8 @@ let User = require('mongoose').model('User'),
     Item = require('mongoose').model('Item'),
     lodash = require('lodash');
 
+const stripe = require('stripe')(config.stripe_secretKey);
+
 let TRANSACTION_SUCCESS_STATUSES = [
         braintree.Transaction.Status.Authorizing,
         braintree.Transaction.Status.Authorized,
@@ -40,7 +42,6 @@ exports.edit = function(req, res, next) {
 
 exports.getClientToken = function(req, res, next) {
     if (req.user) {
-        const stripe = require('stripe')(config.stripe_secretKey);
         const stripe_version = req.body.api_version;
         if (!stripe_version) {
             res.status(400).end();
@@ -61,47 +62,57 @@ exports.getClientToken = function(req, res, next) {
     }
 };
 
-exports.checkout = function(req, res, next){
+exports.checkout = async function(req, res, next){
     if (req.user){
-        let transactionErrors;
         let amount = req.user.currentTransaction.totalAmount; // In production you should not take amounts directly from clients
         let nonce = req.body.payment_method_nonce;
+        let customer = req.user.customerId;
+        amount = Math.round(amount*100);
 
-        gateway.transaction.sale({
+        /*stripe.customers.update(customer, {
+            source: nonce,
+        });*/
+
+        const charge = await stripe.charges.create({
             amount: amount,
-            paymentMethodNonce: nonce,
-            options: {
-                submitForSettlement: true
-            }
-        }, function (err, result) {
-            if (result.success || result.transaction) {
-                let query = {'username':req.user.username};
-                req.user.currentTransaction.transactionId = result.transaction.id;
-                let trans = {};
-                trans.transactionId = result.transaction.id;
-                trans.status = req.user.currentTransaction.status;
-                trans.totalAmount = req.user.currentTransaction.totalAmount;
-                req.user.transactionHistory.push(new Transaction(trans));
-                /*req.user.currentTransaction.cartItems.forEach(function(element) {
-                    console.log(element);
-                    console.log(req.user.transactionHistory[req.user.transactionHistory.length-1]);
-                    req.user.transactionHistory[req.user.transactionHistory.length-1].cartItems.push(new Item(element));
-                });*/
-                req.user.currentTransaction.totalAmount = 0;
-                req.user.currentTransaction.cartItems = [];
-                req.user.currentTransaction.transactionId = 0;
-                User.update(query, req.user, function(err, doc){
-                    if (err) return res.send(500, { error: err });
-                    console.log(doc);
-                    let message = "Your transaction is processed successfully!!";
-                    return res.send({message});
-                });
-            } else {
-                transactionErrors = result.errors.deepErrors();
-                res.send(500,{message:transactionErrors});
-            }
+            currency: 'usd',
+            description: 'Example charge',
+            customer: customer
         });
+
+        console.log(charge);
+
+        if (charge){
+            let query = {'username':req.user.username};
+            let receipt_url = charge.receipt_url;
+            req.user.currentTransaction.transactionId = charge.id;
+            let trans = {};
+            trans.transactionId = charge.id;
+            trans.status = req.user.currentTransaction.status;
+            trans.totalAmount = req.user.currentTransaction.totalAmount;
+            trans.receipt_url = receipt_url;
+            req.user.transactionHistory.push(new Transaction(trans));
+            req.user.currentTransaction.totalAmount = 0;
+            req.user.currentTransaction.cartItems = [];
+            req.user.currentTransaction.transactionId = '';
+            User.update(query, req.user, function(err, doc){
+                if (err) return res.send(500, { error: err });
+                console.log(doc);
+                let message = "Your transaction is processed successfully!!";
+                return res.send(200,{message,receipt_url});
+            });
+        }
     }
+};
+
+exports.listAllCards = function (req, res, next) {
+    let customer = req.user.customerId;
+    stripe.issuing.cards.list({limit: 3},
+        function(err, cards) {
+            if (err) return res.send(500, { error: err });
+            console.log(cards);
+        }
+    );
 };
 
 exports.addItem = function (req, res, next) {
