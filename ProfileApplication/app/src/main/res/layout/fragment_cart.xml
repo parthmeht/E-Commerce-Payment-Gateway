@@ -25,11 +25,11 @@
     <Button
         android:id="@+id/cart_makePayment_stripe"
         android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:background="@drawable/rounded_button"
         android:padding="10dp"
-        android:layout_height="wrap_content"
+        android:text="Checkout"
         android:textColor="@android:color/background_light"
-        android:text="Stripe Payment"
         app:layout_constraintBottom_toTopOf="@+id/cart_makePaymentButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -38,6 +38,7 @@
         android:id="@+id/fragment_cart_total_price"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
         android:text="@string/price"
         android:textSize="24sp"
         app:layout_constraintBottom_toTopOf="@+id/cart_makePayment_stripe"

@@ -56,7 +56,7 @@ public class PaymentActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_payment);
-
+        setTitle("Add New Card");
         token = getIntent().getExtras().getString(Parameters.TOKEN);
         user = (User) getIntent().getExtras().getSerializable(Parameters.USER_ID);
         PaymentConfiguration.init(getApplicationContext(), "pk_test_XEnZDjQFcIvAelNPKlRcaOJ100EcD66wp4");
@@ -122,6 +122,7 @@ public class PaymentActivity extends AppCompatActivity {
                         try {
                             jsonObject.put(Parameters.CARD_TOKEN, token.getId());
                             postForPayment(Parameters.API_URL+"/user/createCard", jsonObject.toString());
+
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -156,8 +157,11 @@ public class PaymentActivity extends AppCompatActivity {
             @Override public void onResponse(Call call, Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
                     if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
-
-
+                    Intent i = new Intent(PaymentActivity.this, CardList.class);
+                    i.putExtra(Parameters.TOKEN, token);
+                    i.putExtra(Parameters.USER_ID, user);
+                    startActivity(i);
+                    finish();
                 }
             }
         });

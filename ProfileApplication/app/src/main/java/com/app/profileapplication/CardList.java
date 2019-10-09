@@ -52,6 +52,7 @@ public class CardList extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_card_list);
+        setTitle("Cards");
         cardList = findViewById(R.id.card_list_pma);
         addNewCard = findViewById(R.id.card_list_new_card);
         token = getIntent().getExtras().getString(Parameters.TOKEN);
@@ -107,7 +108,7 @@ public class CardList extends AppCompatActivity {
                         for(int i=0;i<jsonArray.length();i++) {
                             JSONObject obj = jsonArray.getJSONObject(i);
                             HashMap<String,String> hashMap=new HashMap<>();//create a hashmap to store the data in key value pair
-                            hashMap.put("last4digit",obj.getString("last4"));
+                            hashMap.put("last4digit","**** **** **** " + obj.getString("last4"));
                             hashMap.put("tokenId",obj.getString("brand"));
                             arrayList.add(hashMap);
                         }
@@ -144,31 +145,23 @@ public class CardList extends AppCompatActivity {
                     }
                     int responseStatus = response.code();
                     String responseString = responseBody.string();
-                    Log.v(TAG,String.valueOf(responseStatus));
+                    Log.v(TAG,responseString);
                     try {
                         JSONObject json = new JSONObject(responseString);
-                        /*message = (String) json.get(Parameters.MESSAGE);
-                        Log.d("PAYMENT-RESPONSE", message);
-                        if (responseStatus == 500){
-                            getActivity().runOnUiThread(()->{
-                                Toast.makeText(getContext(), "Payment Failed", Toast.LENGTH_LONG).show();
-                            });
-                        }
-                        else if(message.equals(Parameters.PAYMENT_SUCCESSFUL)){
-                            cartItems.clear();
-                            getActivity().runOnUiThread(()->{
-                                cartAdapter.notifyDataSetChanged();
-                                Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
-                                price.setText("Total : $ " + 0.0);
-                                makePayment.setEnabled(false);
-                                makePayment.setBackgroundColor(Color.GRAY);
-                                //makePayment.setBackground(ContextCompat.getDrawable(getActivity(),R.drawable.rounded_disablebutton));
-                                makePayment.setClickable(false);
-                            });
-                        }*/
+                        //String token = (String) json.get(Parameters.TOKEN);
+                        String message = (String) json.get(Parameters.MESSAGE);
+                        String invoiceUrl = (String) json.get("receipt_url");
+                        //Log.d("RESPONSE", message);
+                        Intent i = new Intent(CardList.this, InvoiceActivity.class);
+                        i.putExtra("url", invoiceUrl);
+                        i.putExtra(Parameters.TOKEN, token);
+                        i.putExtra(Parameters.USER_ID, user);
+                        startActivity(i);
+                        finish();
                     } catch (JSONException e){
                         e.printStackTrace();
                     }
+
                 }
             }
         });
