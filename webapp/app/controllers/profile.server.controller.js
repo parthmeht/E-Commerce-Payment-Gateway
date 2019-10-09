@@ -14,33 +14,33 @@ let User = require('mongoose').model('User'),
 const stripe = require('stripe')(config.stripe_secretKey);
 
 let TRANSACTION_SUCCESS_STATUSES = [
-        braintree.Transaction.Status.Authorizing,
-        braintree.Transaction.Status.Authorized,
-        braintree.Transaction.Status.Settled,
-        braintree.Transaction.Status.Settling,
-        braintree.Transaction.Status.SettlementConfirmed,
-        braintree.Transaction.Status.SettlementPending,
-        braintree.Transaction.Status.SubmittedForSettlement
-    ];
-    
-exports.edit = function(req, res, next) {
+    braintree.Transaction.Status.Authorizing,
+    braintree.Transaction.Status.Authorized,
+    braintree.Transaction.Status.Settled,
+    braintree.Transaction.Status.Settling,
+    braintree.Transaction.Status.SettlementConfirmed,
+    braintree.Transaction.Status.SettlementPending,
+    braintree.Transaction.Status.SubmittedForSettlement
+];
+
+exports.edit = function (req, res, next) {
     if (req.user) {
         //var user = new User(req.body);
         let message = null;
-        let query = {'username':req.user.username};
+        let query = {'username': req.user.username};
         req.user.firstName = req.body.firstName;
         req.user.lastName = req.body.lastName;
         req.user.city = req.body.city;
         req.user.gender = req.body.gender;
-        User.update(query, req.user, function(err, doc){
-            if (err) return res.send(500, { error: err });
+        User.update(query, req.user, function (err, doc) {
+            if (err) return res.send(500, {error: err});
             message = "Profile updated succesfully!!";
             return res.send({message});
         });
     }
 };
 
-exports.getClientToken = function(req, res, next) {
+exports.getClientToken = function (req, res, next) {
     if (req.user) {
         const stripe_version = req.body.api_version;
         if (!stripe_version) {
@@ -53,21 +53,21 @@ exports.getClientToken = function(req, res, next) {
             {customer: req.user.customerId},
             {stripe_version: stripe_version}
         ).then((key) => {
-            res.send(200,{key});
+            res.send(200, {key});
         }).catch((err) => {
-            res.send(500,{message: "Invalid Request"});
+            res.send(500, {message: "Invalid Request"});
         });
-    }else{
-        res.send(500,{message: "Invalid Request"});
+    } else {
+        res.send(500, {message: "Invalid Request"});
     }
 };
 
-exports.checkout = async function(req, res, next){
-    if (req.user){
+exports.checkout = async function (req, res, next) {
+    if (req.user) {
         let amount = req.user.currentTransaction.totalAmount; // In production you should not take amounts directly from clients
         let nonce = req.body.payment_method_nonce;
         let customer = req.user.customerId;
-        amount = Math.round(amount*100);
+        amount = Math.round(amount * 100);
 
         /*stripe.customers.update(customer, {
             source: nonce,
@@ -82,8 +82,8 @@ exports.checkout = async function(req, res, next){
 
         console.log(charge);
 
-        if (charge){
-            let query = {'username':req.user.username};
+        if (charge) {
+            let query = {'username': req.user.username};
             let receipt_url = charge.receipt_url;
             req.user.currentTransaction.transactionId = charge.id;
             let trans = {};
@@ -95,11 +95,11 @@ exports.checkout = async function(req, res, next){
             req.user.currentTransaction.totalAmount = 0;
             req.user.currentTransaction.cartItems = [];
             req.user.currentTransaction.transactionId = '';
-            User.update(query, req.user, function(err, doc){
-                if (err) return res.send(500, { error: err });
+            User.update(query, req.user, function (err, doc) {
+                if (err) return res.send(500, {error: err});
                 console.log(doc);
                 let message = "Your transaction is processed successfully!!";
-                return res.send(200,{message,receipt_url});
+                return res.send(200, {message, receipt_url});
             });
         }
     }
@@ -107,27 +107,27 @@ exports.checkout = async function(req, res, next){
 
 exports.listAllCards = function (req, res, next) {
     let customer = req.user.customerId;
-    stripe.issuing.cards.list({limit: 3},
-        function(err, cards) {
-            if (err) return res.send(500, { error: err });
-            console.log(cards);
-        }
-    );
+    stripe.customers.listSources(customer, {
+            object: 'card',
+    }, function (err, cards) {
+        if (err) return res.send(500, {error: err});
+        console.log(cards);
+    });
 };
 
 exports.addItem = function (req, res, next) {
-    if(req.user){
-        let query = {'username':req.user.username};
+    if (req.user) {
+        let query = {'username': req.user.username};
         let item = new Item(req.body);
-        if(isNaN(req.user.currentTransaction.totalAmount))
+        if (isNaN(req.user.currentTransaction.totalAmount))
             req.user.currentTransaction.totalAmount = item.discount;
-        else{
+        else {
             req.user.currentTransaction.totalAmount = req.user.currentTransaction.totalAmount + item.discount;
             req.user.currentTransaction.totalAmount = Math.round(req.user.currentTransaction.totalAmount * 100) / 100;
         }
         req.user.currentTransaction.cartItems.push(item);
-        User.update(query, req.user, function(err, doc){
-            if (err) return res.send(500, { error: err });
+        User.update(query, req.user, function (err, doc) {
+            if (err) return res.send(500, {error: err});
             console.log(doc);
             let message = "Cart updated successfully!!";
             return res.send({message});
@@ -135,29 +135,29 @@ exports.addItem = function (req, res, next) {
     }
 };
 
-exports.deleteItem = function (req,res, next) {
-  if (req.user && req.user.currentTransaction!==undefined && req.user.currentTransaction.cartItems.length>0){
-      let cartLength = req.user.currentTransaction.cartItems.length;
-      let query = {'username':req.user.username};
-      let itemId = req.body.id;
-      req.user.currentTransaction.cartItems = lodash.remove(req.user.currentTransaction.cartItems, function(obj) {
-          return obj._id.toString() !== itemId;
-      });
-      if (cartLength===req.user.currentTransaction.cartItems.length){
-          return res.send({message:"Item id not found in the cart"});
-      }else{
-          req.user.currentTransaction.totalAmount -= req.body.discountPrice;
-          req.user.currentTransaction.totalAmount = Math.round(req.user.currentTransaction.totalAmount * 100) / 100;
-          if (req.user.currentTransaction.totalAmount<0)
-              req.user.currentTransaction.totalAmount = 0;
-          User.update(query, req.user, function(err, doc){
-              if (err) return res.send(500, { error: err });
-              console.log(doc);
-              let message = "Cart updated successfully!!";
-              return res.send({message});
-          });
-      }
-  }else{
-      return res.send(500,{message:"Can't perform this operation"});
-  }
+exports.deleteItem = function (req, res, next) {
+    if (req.user && req.user.currentTransaction !== undefined && req.user.currentTransaction.cartItems.length > 0) {
+        let cartLength = req.user.currentTransaction.cartItems.length;
+        let query = {'username': req.user.username};
+        let itemId = req.body.id;
+        req.user.currentTransaction.cartItems = lodash.remove(req.user.currentTransaction.cartItems, function (obj) {
+            return obj._id.toString() !== itemId;
+        });
+        if (cartLength === req.user.currentTransaction.cartItems.length) {
+            return res.send({message: "Item id not found in the cart"});
+        } else {
+            req.user.currentTransaction.totalAmount -= req.body.discountPrice;
+            req.user.currentTransaction.totalAmount = Math.round(req.user.currentTransaction.totalAmount * 100) / 100;
+            if (req.user.currentTransaction.totalAmount < 0)
+                req.user.currentTransaction.totalAmount = 0;
+            User.update(query, req.user, function (err, doc) {
+                if (err) return res.send(500, {error: err});
+                console.log(doc);
+                let message = "Cart updated successfully!!";
+                return res.send({message});
+            });
+        }
+    } else {
+        return res.send(500, {message: "Can't perform this operation"});
+    }
 };
