@@ -105,6 +105,10 @@ exports.checkout = async function (req, res, next) {
     }
 };
 
+exports.addCard = function (req, res, next){
+
+};
+
 exports.listAllCards = function (req, res, next) {
     let customer = req.user.customerId;
     stripe.customers.listSources(customer, {
@@ -112,6 +116,7 @@ exports.listAllCards = function (req, res, next) {
     }, function (err, cards) {
         if (err) return res.send(500, {error: err});
         console.log(cards);
+        res.send(200,{cards});
     });
 };
 
