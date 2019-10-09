@@ -4,26 +4,28 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".PaymentActivity">
+    tools:context=".CardList">
 
-
-    <com.stripe.android.view.CardMultilineWidget
-        android:id="@+id/card_widget"
+    <ListView
+        android:id="@+id/card_list_pma"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="15dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/card_payment"
+        android:id="@+id/card_list_new_card"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/makePayment"
+        android:layout_marginTop="24dp"
+        android:background="@drawable/rounded_button"
+        android:padding="10dp"
+        android:text="@string/addCard"
+        android:textColor="@android:color/background_light"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/card_widget" />
-
-
-
+        app:layout_constraintTop_toBottomOf="@+id/card_list_pma" />
 </androidx.constraintlayout.widget.ConstraintLayout>

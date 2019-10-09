@@ -3,10 +3,13 @@ package com.app.profileapplication;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
 import com.app.profileapplication.models.User;
@@ -21,10 +24,13 @@ import com.stripe.android.view.CardMultilineWidget;
 import com.stripe.android.view.PaymentMethodsActivityStarter;
 
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -44,7 +50,7 @@ public class PaymentActivity extends AppCompatActivity {
     private String token;
     private Card card;
     private User user;
-
+    private String TAG = "PaymentActivity";
     private Button paymentButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +64,7 @@ public class PaymentActivity extends AppCompatActivity {
         CardMultilineWidget cardWidget = findViewById(R.id.card_widget);
 
         paymentButton = findViewById(R.id.card_payment);
+
         paymentButton.setOnClickListener(view -> {
             card = cardWidget.getCard();
             card = card.toBuilder().customer(user.getCustomerId()).build();
@@ -114,7 +121,7 @@ public class PaymentActivity extends AppCompatActivity {
                         JSONObject jsonObject = new JSONObject();
                         try {
                             jsonObject.put(Parameters.PAYMENT_METHOD_NONCE, token.getId());
-                            postForPayment(Parameters.API_URL+"/user/checkout", jsonObject.toString());
+                            postForPayment(Parameters.API_URL+"/user/createCard", jsonObject.toString());
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -155,5 +162,7 @@ public class PaymentActivity extends AppCompatActivity {
             }
         });
     }
+
+
 }
 

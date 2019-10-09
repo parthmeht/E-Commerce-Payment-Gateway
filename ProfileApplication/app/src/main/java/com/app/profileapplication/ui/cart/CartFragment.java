@@ -20,6 +20,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.app.profileapplication.CardList;
 import com.app.profileapplication.HomeActivity;
 import com.app.profileapplication.MainActivity;
 import com.app.profileapplication.PaymentActivity;
@@ -124,7 +125,8 @@ public class CartFragment extends Fragment implements CartAdapter.RemoveItem {
 
         stripePayment = view.findViewById(R.id.cart_makePayment_stripe);
         stripePayment.setOnClickListener(view1 -> {
-            Intent i = new Intent(getActivity(), PaymentActivity.class);
+            //Intent i = new Intent(getActivity(), PaymentActivity.class);
+            Intent i = new Intent(getActivity(), CardList.class);
             i.putExtra(Parameters.TOKEN, token);
             i.putExtra(Parameters.USER_ID, user);
 
