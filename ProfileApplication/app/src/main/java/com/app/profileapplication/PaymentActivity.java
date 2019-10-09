@@ -17,6 +17,7 @@ import com.stripe.android.model.Card;
 import com.stripe.android.model.PaymentMethodCreateParams;
 import com.stripe.android.model.Token;
 import com.stripe.android.view.CardMultilineWidget;
+import com.stripe.android.view.PaymentMethodsActivityStarter;
 
 
 import org.json.JSONException;
@@ -47,6 +48,7 @@ public class PaymentActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_payment);
+
         token = getIntent().getExtras().getString(Parameters.TOKEN);
         PaymentConfiguration.init(getApplicationContext(), "pk_test_XEnZDjQFcIvAelNPKlRcaOJ100EcD66wp4");
         stripe = new Stripe(getApplicationContext(), PaymentConfiguration.getInstance(getApplicationContext()).getPublishableKey());
@@ -94,13 +96,16 @@ public class PaymentActivity extends AppCompatActivity {
         });
     }
 
+    private void launchPaymentMethodsActivity() {
+        new PaymentMethodsActivityStarter(this).startForResult();
+    }
     private void tokenizeCard(@NonNull Card card) {
         stripe.createToken(
                 card,
                 new ApiResultCallback<Token>() {
                     public void onSuccess(@NonNull Token token) {
                         // send token ID to your server, you'll create a charge next
-                        Log.d("Payment", "Successful");
+                        Log.d("Payment", "Successful  "+ token);
                     }
 
                     @Override
