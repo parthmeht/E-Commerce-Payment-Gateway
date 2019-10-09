@@ -8,6 +8,7 @@ var mongoose = require('mongoose'),
 	autoIncrement = require('mongoose-auto-increment'),
 	gateway = require('../../config/gateway'),
 	Transaction = require('./transaction.server.model'),
+	config = require('../../config/config'),
 	Object = Schema.Types.Object;
 
 
@@ -65,7 +66,7 @@ var UserSchema = new Schema({
 		type: String,
 		required: 'Gender is required'
 	},
-	customerId: Number,
+	customerId: String,
 	created: {
 		type: Date,
 		// Create a default 'created' value
@@ -100,15 +101,15 @@ UserSchema.pre('save', async function (next) {
 		this.password = this.hashPassword(this.password);
 	}
 	this.currentTransaction = new Transaction();
-	let response = await gateway.customer.create({
-		firstName: this.firstName,
-		lastName: this.lastName,
-		email: this.email
+	const stripe = require('stripe')(config.stripe_secretKey);
+	let customer = await stripe.customers.create({
+		"name": this.firstName + ' ' + this.lastName,
+		"email": this.email
 	});
 
-	console.log(response);
-	if(response.success){
-		this.customerId = 	response.customer.id;
+	console.log(customer);
+	if(customer){
+		this.customerId = customer.id;
 		next();
 	}else {
 		var message = 'Failed to create the user!';

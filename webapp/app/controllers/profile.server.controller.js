@@ -40,11 +40,24 @@ exports.edit = function(req, res, next) {
 
 exports.getClientToken = function(req, res, next) {
     if (req.user) {
-        gateway.clientToken.generate({customerId: req.user.customerId}, function (err, response) {
-            res.send({clientToken: response.clientToken, messages: "Success"});
+        const stripe = require('stripe')(config.stripe_secretKey);
+        const stripe_version = req.body.api_version;
+        if (!stripe_version) {
+            res.status(400).end();
+            return;
+        }
+        // This function assumes that some previous middleware has determined the
+        // correct customerId for the session and saved it on the request object.
+        stripe.ephemeralKeys.create(
+            {customer: req.user.customerId},
+            {stripe_version: stripe_version}
+        ).then((key) => {
+            res.send(200,{key});
+        }).catch((err) => {
+            res.send(500,{message: "Invalid Request"});
         });
     }else{
-        res.send({message: "Invalid Request"});
+        res.send(500,{message: "Invalid Request"});
     }
 };
 
