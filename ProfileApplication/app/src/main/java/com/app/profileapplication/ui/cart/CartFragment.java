@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.app.profileapplication.HomeActivity;
 import com.app.profileapplication.MainActivity;
+import com.app.profileapplication.PaymentActivity;
 import com.app.profileapplication.R;
 import com.app.profileapplication.SignUpActivity;
 import com.app.profileapplication.adapters.CartAdapter;
@@ -62,7 +63,7 @@ public class CartFragment extends Fragment implements CartAdapter.RemoveItem {
     private View view;
     private String TAG = "CartFragment";
     private int DROP_IN_REQUEST = 100;
-    private Button makePayment;
+    private Button makePayment, stripePayment;
     private BraintreeFragment mBraintreeFragment;
     private OkHttpClient client = new OkHttpClient();
     private SharedPreferences preferences;
@@ -119,6 +120,12 @@ public class CartFragment extends Fragment implements CartAdapter.RemoveItem {
             startActivityForResult(dropInRequest.getIntent(getContext()), DROP_IN_REQUEST);
         });
 
+        stripePayment = view.findViewById(R.id.cart_makePayment_stripe);
+        stripePayment.setOnClickListener(view1 -> {
+            Intent i = new Intent(getActivity(), PaymentActivity.class);
+            i.putExtra(Parameters.TOKEN, token);
+            startActivity(i);
+        });
         return view;
     }
 
