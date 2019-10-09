@@ -77,7 +77,8 @@ exports.checkout = async function (req, res, next) {
             amount: amount,
             currency: 'usd',
             description: 'Example charge',
-            customer: customer
+            customer: customer,
+            source: nonce
         });
 
         console.log(charge);
@@ -105,8 +106,39 @@ exports.checkout = async function (req, res, next) {
     }
 };
 
-exports.addCard = function (req, res, next){
+exports.createCard = function (req, res, next){
+    let customer = req.user.customerId;
+    let cardToken = req.body.cardToken;
+    stripe.customers.createSource(customer, {
+        source: cardToken,
+    }, function (err, card) {
+        if (err) return res.send(500, {error: err});
+        console.log(card);
+        res.send(200,{card});
+    });
+};
 
+exports.updateCard = function (req, res, next){
+    /*let customer = req.user.customerId;
+    let cardId = req.body.cardId;
+    stripe.customers.updateSource(customer, {
+        source: cardToken,
+    }, function (err, card) {
+        if (err) return res.send(500, {error: err});
+        console.log(card);
+        res.send(200,{card});
+    });*/
+};
+
+exports.deleteCard = function (req, res, next){
+    let customer = req.user.customerId;
+    let cardId = req.body.cardId;
+    stripe.customers.deleteSource(customer, cardId,
+        function(err, confirmation) {
+        if (err) return res.send(500, {error: err});
+        console.log(confirmation);
+        res.send(200,{confirmation});
+    });
 };
 
 exports.listAllCards = function (req, res, next) {
