@@ -72,6 +72,7 @@ public class CartFragment extends Fragment implements CartAdapter.RemoveItem {
     private RecyclerView recyclerView;
     private Double total;
     private TextView price;
+    private User user;
     ArrayList<CartItems> cartItems = new ArrayList<>();
     public static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
     String message;
@@ -91,6 +92,7 @@ public class CartFragment extends Fragment implements CartAdapter.RemoveItem {
         userToken = getArguments().getString(Parameters.TOKEN);
         total = getArguments().getDouble(Parameters.PRICE);
 
+        user = (User) getArguments().getSerializable(Parameters.USER_ID);
         getData(Parameters.API_URL + "/user/profile");
 
         recyclerView = view.findViewById(R.id.fragment_cart_recyclerView);
@@ -124,6 +126,8 @@ public class CartFragment extends Fragment implements CartAdapter.RemoveItem {
         stripePayment.setOnClickListener(view1 -> {
             Intent i = new Intent(getActivity(), PaymentActivity.class);
             i.putExtra(Parameters.TOKEN, token);
+            i.putExtra(Parameters.USER_ID, user);
+
             startActivity(i);
         });
         return view;

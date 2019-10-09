@@ -9,6 +9,7 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.app.profileapplication.models.User;
 import com.app.profileapplication.utilities.Parameters;
 import com.stripe.android.ApiResultCallback;
 import com.stripe.android.PaymentConfiguration;
@@ -42,6 +43,7 @@ public class PaymentActivity extends AppCompatActivity {
     private OkHttpClient client = new OkHttpClient();
     private String token;
     private Card card;
+    private User user;
 
     private Button paymentButton;
     @Override
@@ -50,6 +52,7 @@ public class PaymentActivity extends AppCompatActivity {
         setContentView(R.layout.activity_payment);
 
         token = getIntent().getExtras().getString(Parameters.TOKEN);
+        user = (User) getIntent().getExtras().getSerializable(Parameters.USER_ID);
         PaymentConfiguration.init(getApplicationContext(), "pk_test_XEnZDjQFcIvAelNPKlRcaOJ100EcD66wp4");
         stripe = new Stripe(getApplicationContext(), PaymentConfiguration.getInstance(getApplicationContext()).getPublishableKey());
         CardMultilineWidget cardWidget = findViewById(R.id.card_widget);
@@ -57,7 +60,9 @@ public class PaymentActivity extends AppCompatActivity {
         paymentButton = findViewById(R.id.card_payment);
         paymentButton.setOnClickListener(view -> {
             card = cardWidget.getCard();
+            card = card.toBuilder().customer(user.getCustomerId()).build();
             if(card!=null){
+                Log.d("CUstomer", card.getCustomerId());
                 tokenizeCard(card);
             }
         });
@@ -106,6 +111,14 @@ public class PaymentActivity extends AppCompatActivity {
                     public void onSuccess(@NonNull Token token) {
                         // send token ID to your server, you'll create a charge next
                         Log.d("Payment", "Successful  "+ token);
+                        JSONObject jsonObject = new JSONObject();
+                        try {
+                            jsonObject.put(Parameters.PAYMENT_METHOD_NONCE, token.getId());
+                            postForPayment(Parameters.API_URL+"/user/checkout", jsonObject.toString());
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
                     }
 
                     @Override
@@ -114,6 +127,33 @@ public class PaymentActivity extends AppCompatActivity {
                     }
                 }
         );
+    }
+
+
+
+
+
+    public void postForPayment(String url, String json) {
+        RequestBody body = RequestBody.create(json, JSON);
+        Request request = new Request.Builder()
+                .url(url)
+                .post(body)
+                .header("Authorization",Parameters.BEARER + " " + token)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override public void onResponse(Call call, Response response) throws IOException {
+                try (ResponseBody responseBody = response.body()) {
+                    if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+
+
+                }
+            }
+        });
     }
 }
 

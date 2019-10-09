@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.app.profileapplication.R;
 import com.app.profileapplication.adapters.ItemsAdapter;
 import com.app.profileapplication.models.Items;
+import com.app.profileapplication.models.User;
 import com.app.profileapplication.ui.cart.CartFragment;
 import com.app.profileapplication.ui.edit.EditFragment;
 import com.app.profileapplication.utilities.Parameters;
@@ -55,6 +56,7 @@ public class ItemsFragment extends Fragment implements ItemsAdapter.ItemsCartInt
     Button checkoutButton;
     private Double total = 0.0;
 
+    private User user;
     private static DecimalFormat df2 = new DecimalFormat("#.##");
     ItemsAdapter itemsAdapter;
     public ItemsFragment() {
@@ -71,6 +73,7 @@ public class ItemsFragment extends Fragment implements ItemsAdapter.ItemsCartInt
 
         String responseString = getData(Parameters.API_URL+"/item/getitems", view);
         token = getArguments().getString(Parameters.TOKEN);
+        user = (User) getArguments().getSerializable(Parameters.USER_ID);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
         checkoutButton = view.findViewById(R.id.fragment_items_checkout);
         checkoutButton.setOnClickListener(view1 -> {
@@ -78,6 +81,7 @@ public class ItemsFragment extends Fragment implements ItemsAdapter.ItemsCartInt
             bundle.putSerializable(Parameters.ITEM_LIST, itemsAdded);
             //bundle.putDouble(Parameters.PRICE, total);
             bundle.putString(Parameters.TOKEN, token);
+            bundle.putSerializable(Parameters.USER_ID, user);
 
             CartFragment fragment = new CartFragment();
             fragment.setArguments(bundle);
