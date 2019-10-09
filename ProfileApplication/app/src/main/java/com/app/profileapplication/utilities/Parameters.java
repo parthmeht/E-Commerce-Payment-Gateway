@@ -55,4 +55,5 @@ public final class Parameters {
 
     public static final String PAYMENT_SUCCESSFUL = "Your transaction is processed successfully!!";
     public static final String ITEM_LIST = "itemList";
+    public static final String CARD_TOKEN = "cardToken";
 }

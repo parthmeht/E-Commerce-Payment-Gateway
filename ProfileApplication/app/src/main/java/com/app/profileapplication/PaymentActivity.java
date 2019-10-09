@@ -120,7 +120,7 @@ public class PaymentActivity extends AppCompatActivity {
                         Log.d("Payment", "Successful  "+ token);
                         JSONObject jsonObject = new JSONObject();
                         try {
-                            jsonObject.put(Parameters.PAYMENT_METHOD_NONCE, token.getId());
+                            jsonObject.put(Parameters.CARD_TOKEN, token.getId());
                             postForPayment(Parameters.API_URL+"/user/createCard", jsonObject.toString());
                         } catch (JSONException e) {
                             e.printStackTrace();
