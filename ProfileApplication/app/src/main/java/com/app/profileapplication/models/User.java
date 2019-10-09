@@ -9,7 +9,7 @@ import java.io.Serializable;
 
 public class User implements Serializable {
     private String id;
-    private long customerId;
+    private String customerId;
     private String userId;
     private String userProfileImageUrl;
     private String firstName;
@@ -37,7 +37,7 @@ public class User implements Serializable {
     public User(JSONObject json){
         try {
             this.id = json.getString(Parameters.ID);
-            this.customerId = json.getLong(Parameters.CUSTOMER_ID);
+            this.customerId = json.getString(Parameters.CUSTOMER_ID);
             this.userId = json.getString(Parameters.USER_ID);
             this.firstName = json.getString(Parameters.FIRST_NAME);
             this.lastName = json.getString(Parameters.LAST_NAME);
@@ -142,11 +142,11 @@ public class User implements Serializable {
                 '}';
     }
 
-    public long getCustomerId() {
+    public String getCustomerId() {
         return customerId;
     }
 
-    public void setCustomerId(long customerId) {
+    public void setCustomerId(String customerId) {
         this.customerId = customerId;
     }
 }
