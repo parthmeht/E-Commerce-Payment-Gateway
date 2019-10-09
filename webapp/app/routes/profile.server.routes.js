@@ -17,7 +17,7 @@ router.get('/profile', function (req, res, next) {
 
 router.post('/edit', profile.edit);
 
-router.get('/client_token', profile.getClientToken);
+router.post('/client_token', profile.getClientToken);
 
 router.post("/checkout", profile.checkout);
 
