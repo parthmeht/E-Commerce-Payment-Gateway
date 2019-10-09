@@ -97,7 +97,7 @@ exports.checkout = async function (req, res, next) {
             req.user.currentTransaction.cartItems = [];
             req.user.currentTransaction.transactionId = '';
             User.update(query, req.user, function (err, doc) {
-                if (err) return res.send(500, {error: err});
+                if (err) return res.send(500, {error: err,message: "Your transaction has failed!!"});
                 console.log(doc);
                 let message = "Your transaction is processed successfully!!";
                 return res.send(200, {message, receipt_url});
