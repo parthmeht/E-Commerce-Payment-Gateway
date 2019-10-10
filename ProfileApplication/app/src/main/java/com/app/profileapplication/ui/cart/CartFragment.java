@@ -95,7 +95,7 @@ public class CartFragment extends Fragment implements CartAdapter.RemoveItem {
 
         user = (User) getArguments().getSerializable(Parameters.USER_ID);
         getData(Parameters.API_URL + "/user/profile");
-
+        stripePayment = view.findViewById(R.id.cart_makePayment_stripe);
         recyclerView = view.findViewById(R.id.fragment_cart_recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext())) ;
 
@@ -104,13 +104,20 @@ public class CartFragment extends Fragment implements CartAdapter.RemoveItem {
         if(total>0){
             makePayment.setEnabled(true);
             makePayment.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-            //makePayment.setBackground(ContextCompat.getDrawable(getActivity(),R.drawable.rounded_button));
             makePayment.setClickable(true);
+
+            stripePayment.setEnabled(true);
+            stripePayment.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+            stripePayment.setClickable(true);
         }else{
             makePayment.setEnabled(false);
             makePayment.setBackgroundColor(Color.GRAY);
             //makePayment.setBackground(ContextCompat.getDrawable(getActivity(),R.drawable.rounded_disablebutton));
             makePayment.setClickable(false);
+
+            stripePayment.setEnabled(false);
+            stripePayment.setBackgroundColor(Color.GRAY);
+            stripePayment.setClickable(false);
         }
         preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
         token = preferences.getString(Parameters.TOKEN, "");
@@ -123,7 +130,7 @@ public class CartFragment extends Fragment implements CartAdapter.RemoveItem {
             startActivityForResult(dropInRequest.getIntent(getContext()), DROP_IN_REQUEST);
         });
 
-        stripePayment = view.findViewById(R.id.cart_makePayment_stripe);
+
         stripePayment.setOnClickListener(view1 -> {
             //Intent i = new Intent(getActivity(), PaymentActivity.class);
             Intent i = new Intent(getActivity(), CardList.class);
@@ -257,6 +264,9 @@ public class CartFragment extends Fragment implements CartAdapter.RemoveItem {
                                 makePayment.setBackgroundColor(Color.GRAY);
                                 //makePayment.setBackground(ContextCompat.getDrawable(getActivity(),R.drawable.rounded_disablebutton));
                                 makePayment.setClickable(false);
+                                stripePayment.setEnabled(false);
+                                stripePayment.setBackgroundColor(Color.GRAY);
+                                stripePayment.setClickable(false);
                             });
 
 
@@ -319,11 +329,18 @@ public class CartFragment extends Fragment implements CartAdapter.RemoveItem {
                                     //makePayment.setBackground(ContextCompat.getDrawable(getActivity(),R.drawable.rounded_button));
                                     makePayment.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
                                     makePayment.setClickable(true);
+                                    stripePayment.setEnabled(true);
+                                    stripePayment.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                                    stripePayment.setClickable(true);
                                 }else{
                                     makePayment.setEnabled(false);
                                     makePayment.setBackgroundColor(Color.GRAY);
                                     //makePayment.setBackground(ContextCompat.getDrawable(getActivity(),R.drawable.rounded_disablebutton));
                                     makePayment.setClickable(false);
+
+                                    stripePayment.setEnabled(false);
+                                    stripePayment.setBackgroundColor(Color.GRAY);
+                                    stripePayment.setClickable(false);
                                 }
                             });
 
