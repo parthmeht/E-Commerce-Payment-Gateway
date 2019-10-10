@@ -24,12 +24,16 @@
 
     <Button
         android:id="@+id/cart_makePayment_stripe"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="86dp"
+        android:layout_marginEnd="86dp"
+        android:layout_marginBottom="16dp"
         android:background="@drawable/rounded_button"
         android:padding="10dp"
         android:text="Checkout"
         android:textColor="@android:color/background_light"
+        android:textSize="18sp"
         app:layout_constraintBottom_toTopOf="@+id/cart_makePaymentButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
