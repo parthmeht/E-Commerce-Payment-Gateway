@@ -6,4 +6,6 @@ var express = require('express'),
 
 router.get('/getItems', item.getItems);
 
+router.get('/getItemsRegion', item.getItemsRegion);
+
 module.exports = router;

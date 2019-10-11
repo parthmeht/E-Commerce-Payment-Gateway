@@ -15,3 +15,16 @@ exports.getItems = function(req,res,next){
         res.send(itemMap);  
       });
 };
+
+exports.getItemsRegion = function (req, res, next) {
+    let region = req.query.region;
+    Item.find({ 'region': region }, function(err, items) {
+        var itemMap = {};
+
+        items.forEach(function(item) {
+            itemMap[item._id] = item;
+        });
+
+        res.send(itemMap);
+    });
+};
