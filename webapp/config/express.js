@@ -28,6 +28,7 @@ module.exports = function() {
 	}));
 	app.use(bodyParser.json());
 	app.use(methodOverride());
+	app.use(express.static('data/img'));
 
 	// Configure the Passport middleware
 	app.use(passport.initialize());
